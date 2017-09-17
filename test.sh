@@ -78,7 +78,7 @@ sudo make install
 
 
 ### remove the file
-rm -fr mbedtls-2.6.0 shadowsocks-libev libsodium-1.0.13 simple-obfs test.sh mbedtls-2.6.0-gpl.tgz libsodium-1.0.13.tar.gz
+cd /root && rm -fr mbedtls-2.6.0 shadowsocks-libev libsodium-1.0.13 simple-obfs test.sh mbedtls-2.6.0-gpl.tgz libsodium-1.0.13.tar.gz
 
 clear
 echo install successflu
