@@ -32,4 +32,21 @@ cd shadowsocks-libev
 git submodule update --init --recursive
 ./autogen.sh && ./configure && make
 sudo make install
+mkdir /etc/shadowsocks-libev
+###cp /root/shadowsocks-libev/debian/config.json /etc/shadowsocks-libev/config.json
+
+###crate config.json
+cat >/etc/shadowsocks-libev/config.json<< EOF
+{
+    "server":"0.0.0.0",
+    "server_port":443,
+    "local_port":1080,
+    "password":"12345m",
+    "timeout":60,
+    "method":"xchacha20-ietf-poly1305"
+}
+EOF
+
+
+
 
