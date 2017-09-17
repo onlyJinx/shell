@@ -44,7 +44,7 @@ cat >/etc/shadowsocks-libev/config.json<< EOF
     "local_port":1080,
     "password":"12345m",
     "timeout":60,
-    "method":"xchacha20-ietf-poly1305"
+    "method":"xchacha20-ietf-poly1305",
     "nameserver": "8.8.8.8",
     "mode": "tcp_and_udp",
     "plugin":"obfs-server",
