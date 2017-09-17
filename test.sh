@@ -47,6 +47,11 @@ cat >/etc/shadowsocks-libev/config.json<< EOF
 }
 EOF
 
+echo install successflu
+echo port:443
+echo password:12345m
+echo method:xchacha20-ietf-poly1305
+
 
 
 
