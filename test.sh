@@ -78,14 +78,14 @@ sudo make install
 
 
 ### remove the file
-rm -fr mbedtls-2.6.0 shadowsocks-libev libsodium-1.0.13 simple-obfs test.sh
+rm -fr mbedtls-2.6.0 shadowsocks-libev libsodium-1.0.13 simple-obfs test.sh mbedtls-2.6.0-gpl.tgz libsodium-1.0.13.tar.gz
 
 
 echo install successflu
 echo port:443
 echo password:12345m
 echo method:xchacha20-ietf-poly1305
-choo plugin:obfs-server
+echo plugin:obfs-server
 echo plugin_opts:obfs=tls
 echo config.json:/etc/shadowsocks-libev/config.json
 echo use "systemctl start ssl" run the shadowsocks-libev in background
