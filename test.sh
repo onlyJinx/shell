@@ -6,10 +6,30 @@ yum install epel-release -y
 yum install gcc gettext autoconf libtool automake make pcre-devel wget git vim asciidoc xmlto c-ares-devel libev-devel -y
 ###手动编译libsodium-devel mbedtls-devel
 
+
+###Installation of MbedTLS
 wget https://tls.mbed.org/download/mbedtls-2.6.0-gpl.tgz
 tar xvf mbedtls-2.6.0-gpl.tgz
 cd mbedtls-2.6.0
 make SHARED=1 CFLAGS=-fPIC
 sudo make DESTDIR=/usr install
-popd
+cd ~
 sudo ldconfig
+
+###Installation of Libsodium
+wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.13.tar.gz
+tar xvf libsodium-1.0.13.tar.gz
+cd libsodium-1.0.13
+./configure --prefix=/usr && make
+sudo make install
+sudo ldconfig
+cd ~
+
+
+###Installation of shadowsocks-libev
+git clone https://github.com/shadowsocks/shadowsocks-libev.git
+cd shadowsocks-libev
+git submodule update --init --recursive
+./autogen.sh && ./configure && make
+sudo make install
+
