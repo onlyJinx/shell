@@ -36,6 +36,7 @@ mkdir /etc/shadowsocks-libev
 ###cp /root/shadowsocks-libev/debian/config.json /etc/shadowsocks-libev/config.json
 
 ###crate config.json
+###"plugin_opts":"obfs=tls;failover=127.0.0.1:888"
 cat >/etc/shadowsocks-libev/config.json<< EOF
 {
     "server":"0.0.0.0",
@@ -44,13 +45,52 @@ cat >/etc/shadowsocks-libev/config.json<< EOF
     "password":"12345m",
     "timeout":60,
     "method":"xchacha20-ietf-poly1305"
+    "nameserver": "8.8.8.8",
+    "mode": "tcp_and_udp",
+    "plugin":"obfs-server",
+    "plugin_opts":"obfs=tls"
+
 }
 EOF
+
+###crate service
+cat >/etc/systemd/system/ssl.service<< EOF
+[Unit]
+Description=Shadowsocks Server
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/ss-server -c /etc/shadowsocks-libev/config.json
+User=root
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+###Installation of simple-obfs
+
+git clone https://github.com/shadowsocks/simple-obfs.git
+cd simple-obfs
+git submodule update --init --recursive
+./autogen.sh
+./configure && make
+sudo make install
+
+
+### remove the file
+rm -fr mbedtls-2.6.0 shadowsocks-libev libsodium-1.0.13 simple-obfs test.sh
+
 
 echo install successflu
 echo port:443
 echo password:12345m
 echo method:xchacha20-ietf-poly1305
+choo plugin:obfs-server
+echo plugin_opts:obfs=tls
+echo config.json:/etc/shadowsocks-libev/config.json
+echo use "systemctl start ssl" run the shadowsocks-libev in background
+
+echo https://github.com/shadowsocks
 
 
 
