@@ -90,8 +90,8 @@ echo plugin_opts:obfs=tls
 echo config.json:/etc/shadowsocks-libev/config.json
 echo use \"systemctl start ssl\" run the shadowsocks-libev in background
 echo use \"systemctl status ssl\"
-echo.
-echo.
+echo .
+echo .
 echo https://github.com/shadowsocks
 
 
