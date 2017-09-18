@@ -11,7 +11,7 @@ rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
 yum --enablerepo=elrepo-kernel install kernel-ml -y
 
 ###修改默认内核
-sed -i '/s/saved/0/g' /etc/default/grub
+sed -i 's/saved/0/g' /etc/default/grub
 
 ###重新创建内核配置
 grub2-mkconfig -o /boot/grub2/grub.cfg
