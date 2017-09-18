@@ -16,9 +16,6 @@ sed -i 's/saved/0/g' /etc/default/grub
 ###重新创建内核配置
 grub2-mkconfig -o /boot/grub2/grub.cfg
 
-yum update -y
-###原文：http://www.jianshu.com/p/726bd9f37220
-
 # TCP-BBR
 #net.core.default_qdisc=fq
 #net.ipv4.tcp_congestion_control=bbr
@@ -35,4 +32,6 @@ sysctl -p
 ###查看tcp_bbr内核模块是否启动
 lsmod | grep bbr
 
+yum update -y
+###引用：http://www.jianshu.com/p/726bd9f37220
 ###引用：https://legolasng.github.io/2017/05/08/upgrade-centos-kernel/#3安装新版本内核
