@@ -26,6 +26,18 @@ sudo ldconfig
 cd ~
 
 
+
+###Installation of simple-obfs
+
+git clone https://github.com/shadowsocks/simple-obfs.git
+cd simple-obfs
+git submodule update --init --recursive
+./autogen.sh
+./configure && make
+sudo make install
+
+
+
 ###Installation of shadowsocks-libev
 git clone https://github.com/shadowsocks/shadowsocks-libev.git
 cd shadowsocks-libev
@@ -66,15 +78,6 @@ User=root
 [Install]
 WantedBy=multi-user.target
 EOF
-
-###Installation of simple-obfs
-
-git clone https://github.com/shadowsocks/simple-obfs.git
-cd simple-obfs
-git submodule update --init --recursive
-./autogen.sh
-./configure && make
-sudo make install
 
 
 ### remove the file
