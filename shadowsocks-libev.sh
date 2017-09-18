@@ -57,6 +57,7 @@ cat >/etc/shadowsocks-libev/config.json<< EOF
     "password":"12345m",
     "timeout":60,
     "method":"xchacha20-ietf-poly1305",
+    "fast_open": true,
     "nameserver": "8.8.8.8",
     "mode": "tcp_and_udp",
     "plugin":"obfs-server",
@@ -93,8 +94,8 @@ echo plugin_opts:obfs=tls
 echo config.json:/etc/shadowsocks-libev/config.json
 echo use \"systemctl start ssl\" run the shadowsocks-libev in background
 echo use \"systemctl status ssl\"
-echo .
-echo .
+echo 
+echo 
 echo https://github.com/shadowsocks
 
 
