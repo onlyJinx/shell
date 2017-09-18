@@ -18,3 +18,21 @@ grub2-mkconfig -o /boot/grub2/grub.cfg
 
 yum update
 ###原文：http://www.jianshu.com/p/726bd9f37220
+
+# TCP-BBR
+#net.core.default_qdisc=fq
+#net.ipv4.tcp_congestion_control=bbr
+
+cp /etc/sysctl.conf /etc/sysctl.conf.bak
+sed -i '/net.core.default_qdisc/d' /etc/sysctl.conf
+sed -i '/net.ipv4.tcp_congestion_control/d' /etc/sysctl.conf
+echo net.core.default_qdisc=fq >> /etc/sysctl.conf
+echo net.ipv4.tcp_congestion_control=bbr >> /etc/sysctl.conf
+
+###使修改的内核配置生效
+sysctl -p
+
+###查看tcp_bbr内核模块是否启动
+lsmod | grep bbr
+
+###引用：https://legolasng.github.io/2017/05/08/upgrade-centos-kernel/#3安装新版本内核
