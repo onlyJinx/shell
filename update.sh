@@ -1,4 +1,7 @@
+###导入elrepo密钥
 rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+
+###安装elrepo仓库
 rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
 
 ###查询可用版本
