@@ -34,8 +34,8 @@ lsmod | grep bbr
 
 #yum update -y
 
-ping 127.0.0.1 -c 5 >>null
-reboot
+#ping 127.0.0.1 -c 5 >>null
+#reboot
 
 ###引用：http://www.jianshu.com/p/726bd9f37220
 ###引用：https://legolasng.github.io/2017/05/08/upgrade-centos-kernel/#3安装新版本内核
