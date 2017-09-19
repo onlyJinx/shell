@@ -85,18 +85,14 @@ EOF
 cd /root && rm -fr mbedtls-2.6.0 shadowsocks-libev libsodium-1.0.13 simple-obfs test.sh mbedtls-2.6.0-gpl.tgz libsodium-1.0.13.tar.gz
 
 clear
-echo install successflu
-echo port:443
-echo password:12345m
-echo method:xchacha20-ietf-poly1305
-echo plugin:obfs-server
-echo plugin_opts:obfs=tls
-echo config.json:/etc/shadowsocks-libev/config.json
-echo use \"systemctl start ssl\" run the shadowsocks-libev in background
-echo use \"systemctl status ssl\"
-echo 
-echo 
-echo https://github.com/shadowsocks
+echo -e port:"          ""\e[31m\e[1m443\e[0m"
+echo -e password:"      ""\e[31m\e[1m12345m\e[0m"
+echo -e method:"        ""\e[31m\e[1mxchacha20-ietf-poly1305\e[0m"
+echo -e plugin:"        ""\e[31m\e[1mobfs-server\e[0m"
+echo -e plugin_opts:"   ""\e[31m\e[1mobfs=tls\e[0m"
+echo -e config.json:"   ""\e[31m\e[1m/etc/shadowsocks-libev/config.json\n\n\e[0m"
+echo -e use \""\e[31m\e[1msystemctl start ssl\e[0m"\" run the shadowsocks-libev in background
+echo -e "\e[31m\e[1mhttps://github.com/shadowsocks\e[0m"
 
 
 
