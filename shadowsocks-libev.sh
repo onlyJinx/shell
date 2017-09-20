@@ -80,7 +80,7 @@ User=root
 WantedBy=multi-user.target
 EOF
 
-
+systemctl start ssl&&systemctl enable ssl
 ### remove the file
 cd /root && rm -fr mbedtls-2.6.0 shadowsocks-libev libsodium-1.0.13 simple-obfs test.sh mbedtls-2.6.0-gpl.tgz libsodium-1.0.13.tar.gz
 
