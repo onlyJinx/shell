@@ -3,8 +3,8 @@ yum remove epel-release -y
 yum install epel-release -y
 
 ###yum install gcc gettext autoconf libtool automake make pcre-devel asciidoc xmlto c-ares-devel libev-devel libsodium-devel mbedtls-devel -y
-yum install gcc gettext autoconf libtool automake make pcre-devel wget git vim asciidoc xmlto c-ares-devel libev-devel -y
-###手动编译libsodium-devel mbedtls-devel
+yum install gcc gettext autoconf libtool automake make pcre-devel wget git vim asciidoc xmlto libev-devel -y
+###手动编译libsodium-devel mbedtls-devel c-ares
 
 
 ###Installation of MbedTLS
@@ -26,6 +26,16 @@ sudo ldconfig
 cd ~
 
 
+###Installation of c-ares
+git clone https://github.com/c-ares/c-ares.git
+cd c-ares
+./buildconf
+autoconf configure.ac
+./configure --prefix=/usr && make
+sudo make install
+sudo ldconfig
+cd ~
+###安装方法引用http://blog.sina.com.cn/s/blog_6c4a60110101342m.html
 
 ###Installation of simple-obfs
 
