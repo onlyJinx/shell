@@ -99,7 +99,7 @@ echo "  <port protocol=\"tcp\" port=\"28532\"/>" >> /etc/firewalld/zones/public.
 echo "</zone>" >> /etc/firewalld/zones/public.xml
 firewall-cmd --reload > null
 
-systemctl start ssl&&systemctl enable ssl
+systemctl start ssl&&systemctl enable ssl&&systemctl status ssl
 ### remove the file
 cd /root && rm -fr mbedtls-2.6.0 shadowsocks-libev libsodium-1.0.13 simple-obfs test.sh mbedtls-2.6.0-gpl.tgz libsodium-1.0.13.tar.gz c-ares
 
