@@ -101,7 +101,7 @@ firewall-cmd --reload > null
 
 systemctl start ssl&&systemctl enable ssl
 ### remove the file
-cd /root && rm -fr mbedtls-2.6.0 shadowsocks-libev libsodium-1.0.13 simple-obfs test.sh mbedtls-2.6.0-gpl.tgz libsodium-1.0.13.tar.gz
+cd /root && rm -fr mbedtls-2.6.0 shadowsocks-libev libsodium-1.0.13 simple-obfs test.sh mbedtls-2.6.0-gpl.tgz libsodium-1.0.13.tar.gz c-ares
 
 clear
 echo -e port:"          ""\e[31m\e[1m443\e[0m"
