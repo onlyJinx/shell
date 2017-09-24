@@ -1,0 +1,32 @@
+
+.overlay{
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    background: rgba(0,0,0,.5);
+}
+.test{
+    margin: auto;
+    width: 800px;
+    height: 400px;
+    background: red;
+    z-index: 10;
+}
+.mytdcss{
+
+    padding:5px;
+}
+
+
+
+
+
+
+
+
+
+

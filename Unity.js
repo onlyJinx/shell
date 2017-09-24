@@ -1,3 +1,4 @@
+
 var bodyE = null;
 var child = null;
 var fDiv = null;
@@ -8,9 +9,6 @@ window.onload=function(){
 	fDiv = document.getElementsByTagName('div')[0];                                                                                                    //获取第一个DIV,用于 插入悬浮窗（文件管理窗口）
                      addMF();                                                                                                                                                                            //在状态栏添加一个“filemanager”入口
 	child = document.createElement('div');                                                                                                                         //创建遮罩层，也是用于承载整个文件管理窗口的
-                     child.onclick=function(){
-                         remove();
-                     };
 	var fra = document.createElement('div');                                                                                                                      //创建件管理窗口
 	document.getElementById("filema").onclick=function(){                                                                                           //为filemanager添加监听事件，整个JS的入口
                                 addEE();
@@ -21,7 +19,7 @@ window.onload=function(){
 		fDiv.style.zIndex = '-10';
 		child.id = 'download';
 		child.className='overlay';
-		fra.innerHTML='<div class="modal-dialog"><div class="modal-content"><div class="modal-header ng-scope"><button class="close" onclick="remove()">×</button><h4 class="ng-binding">File Lists</h4></div><form class="modal-body ng-pristine ng-valid ng-scope"><fieldset><ul id="gul"><!--<li><h4 class="ng-binding">00000000000</h4></li>--></ul><br><br></fieldset><div class="modal-footer"><button type="button" class="btn btn-default ng-binding" onclick="remove()">Cancel</button><button type="button" class="btn btn-default ng-binding btn-primary" onclick="clearAll()">ClearAll</button></div></form></div></div>';
+		fra.innerHTML='<div class="modal-dialog"><div class="modal-content"><div class="modal-header ng-scope"><button class="close" onclick="remove()">×</button><h4 class="ng-binding">File Lists</h4></div><form class="modal-body ng-pristine ng-valid ng-scope"><fieldset><ul id="gul" style="padding:10px;"></ul><br><br></fieldset><div class="modal-footer"><button type="button" class="btn btn-default ng-binding" onclick="remove()">Cancel</button><button type="button" class="btn btn-default ng-binding btn-primary" onclick="clearAll()">ClearAll</button></div></form></div></div>';
 		child.appendChild(fra);
 		bodyE.appendChild(child);
 	}
@@ -46,17 +44,25 @@ function addMF(){                                                               
 
 function getData(){                                                                                                                                                                               //向服务器请求文件列表
             var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open('get','change.jsp',true);
+	    xmlHttp.timeout = 0;
+            xmlHttp.open('get','/change.jsp',true);
             xmlHttp.onreadystatechange=function (){
                                 if(xmlHttp.readyState==4){
-                                    oUl.innerHTML = xmlHttp.responseText;
+                                    //oUl.innerHTML = xmlHttp.responseText;
+				    if(xmlHttp.responseText.indexOf('<h3>')==2){
+					oUl.innerHTML = xmlHttp.responseText;
+				    }else{
+					getData();
+					//alert(xmlHttp.responseText);
+				    };
                                 }
             };
             xmlHttp.send();
+	    xmlHttp.ontimeout = function(){alert("timeout!!!");};
 }
 
 function clearAll(){                                                                                                                                                                                
-        singledel(0,'C:/Users/RUO/Desktop/css');
+        singledel(0,'/web_home/downloads/');
 }
 
 function singledel(meth,path){                                                                                                                                                           //meth参数：0--全部清除；1--删除一个文件，path传递一个具体文件夹路劲
