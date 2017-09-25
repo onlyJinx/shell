@@ -12,12 +12,14 @@ window.onload=function(){
 	var fra = document.createElement('div');                                                                                                                      //创建件管理窗口
 	document.getElementById("filema").onclick=function(){                                                                                           //为filemanager添加监听事件，整个JS的入口
                                 addEE();
+				bodyE.className="ng-scope overflow1";
                                 oUl = document.getElementById('gul');
                                 getData();
 	};
 	function addEE(){                                                                                                                                                              //从服务器获取文件列表
 		fDiv.style.zIndex = '-10';
 		child.id = 'download';
+		child.style.overflowX = 'auto';
 		child.className='overlay';
 		fra.innerHTML='<div class="modal-dialog"><div class="modal-content"><div class="modal-header ng-scope"><button class="close" onclick="remove()">×</button><h4 class="ng-binding">File Lists</h4></div><form class="modal-body ng-pristine ng-valid ng-scope"><fieldset><ul id="gul" style="padding:10px;"></ul><br><br></fieldset><div class="modal-footer"><button type="button" class="btn btn-default ng-binding" onclick="remove()">Cancel</button><button type="button" class="btn btn-default ng-binding btn-primary" onclick="clearAll()">ClearAll</button></div></form></div></div>';
 		child.appendChild(fra);
@@ -29,6 +31,7 @@ window.onload=function(){
 
 function remove(){
 	fDiv.style.zIndex = '1000';
+	bodyE.className="ng-scope";
 	bodyE.removeChild(child);
 }
 
