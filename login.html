@@ -1,0 +1,38 @@
+<html>
+	<head>
+		<style>
+			body{background:url('000.jpg') center/cover no-repeat;}
+			div{width:20%;height:10%;bottom:30%;right:5%;position:absolute;}
+		</style>
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+                <script>
+                    window.onload = function(){
+                        var inp1 = document.getElementsByTagName('input')[0];
+                        var inp2 = document.getElementsByTagName('input')[1];
+                        var form = document.getElementsByTagName('form')[0];
+                        inp1.onkeyup=function(){
+                            if(this.value.length===0){
+                                inp2.value='enter you password';
+                            }else{
+                                inp2.value='submit';
+                            };
+                        };
+                        form.onsubmit=function(){
+                            if(inp1.value.length==0){
+                                    alert('plase enter password');
+                                    return false;
+                            }
+                        };
+                        
+                    };
+                </script>
+	</head>
+	<body>
+                               <div>
+		<form method="post" action="login.jsp">
+			<input name="passwd" class="form-control" type="password"><br>
+			<input name="submit" type="submit" value="enter you password" class="btn btn-primary col-xs-12">
+		</form>
+                               </div>
+                    </body>
+</html>
