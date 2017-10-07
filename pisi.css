@@ -1,4 +1,6 @@
 
+
+
 .overlay{
     display: block;
     position: fixed;
@@ -9,18 +11,34 @@
     z-index: 10;
     background: rgba(0,0,0,.5);
 }
-.test{
-    margin: auto;
-    width: 800px;
-    height: 400px;
-    background: red;
-    z-index: 10;
-}
-.mytdcss{
 
-    padding:5px;
+.overflow1{
+    overflow: hidden;
 }
-
+		
+.private_td{
+	
+	word-wrap:break-word;
+	word-break:break-all;
+	padding:5px;
+	text-align: center;
+	position: relative;
+	padding: 10px 8px;
+	margin-bottom: -1px;
+	background-color: #fff;
+	border: 1px solid #ddd;
+}
+.private_td:hover{
+	background-color: #f5f5f5;
+}
+.private_td>a{
+	color: #555;
+}
+.private_td>a:hover{
+	color: #555;
+	text-decoration: none;
+  
+}
 
 
 
