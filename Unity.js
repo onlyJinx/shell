@@ -1,4 +1,5 @@
 
+
 var bodyE,child,fDiv,oUl,fUl;
 window.onload=function(){
 	bodyE = document.getElementsByTagName('body')[0];                                                                                            //获取body
@@ -12,7 +13,6 @@ window.onload=function(){
                                 oUl = document.getElementById('gul');
                                 ajaxHttp(0,null,oUl);
                                 ajaxHttp(2,null,document.getElementById('freeSp'));
-                                
 	};
 	function addEE(){                                                                                                                                                              //从服务器获取文件列表
 		fDiv.style.zIndex = '-10';
@@ -62,16 +62,16 @@ function getData(){                                                             
 */
 
 function deleFile(pa,a){
-   ajaxHttp(1,pa,'',false);                                                                                                                                                                        //向服务器发起删除请求
-   a.parentNode.parentNode.parentNode.removeChild(a.parentNode.parentNode);                                                                  //删除TR标签
-   ajaxHttp(2,null,document.getElementById('freeSp'));                                                                                                                    //重新获取可用内存
-   if(oUl.getElementsByTagName('tr').length===0){                                                                                                                         //判断是否为最后一个文件
-        oUl.innerHTML = '<h4>There is no file can be deleted</h4>';
-    }
+   ajaxHttp(1,pa,'',false);                                                                                                                                                                                   //向服务器发起删除请求
+   a.parentNode.parentNode.parentNode.removeChild(a.parentNode.parentNode);                                                                 //删除TR标签
+   ajaxHttp(2,null,document.getElementById('freeSp'));                                                                                                                   //重新获取可用内存i
+   if(oUl.getElementsByTagName('tr').length===0){
+      oUl.innerHTML = '<h4>There is no file can be deleted</h4>';
+   }
 }
 
 function clearAll(){                                                                                                                                                                                
-        ajaxHttp(1,0);                                                                                                                                                                                //向服务器发起删除请求
+        ajaxHttp(1,0,'',false);                                                                                                                                                                                //向服务器发起删除请求
         ajaxHttp(2,null,document.getElementById('freeSp'));                                                                                                              //重新获取可用内存
         oUl.innerHTML = '<h4>AllFile Deleted</h4>';                                                                                                                         //清空整个ul列表
 }
@@ -87,7 +87,7 @@ function ajaxHttp(meth,path,innerObj,sync){
         if(sync===undefined){
                 sync = true;
         }
-        var meth = '?meth='+meth;
+	var meth = '?meth='+meth;
         var path = '&delfil='+path;
         path = encodeURI(encodeURI(path));                                                                                                                                        //两次编码（服务器要一次解码），处理中文乱码问题
         var xmlH = new XMLHttpRequest();
@@ -101,12 +101,10 @@ function ajaxHttp(meth,path,innerObj,sync){
                       }
                   }
         };
-         xmlH.send();
-         xmlH.ontimeout=xmlH.onerror=function(){
-                   alert('request timeout!');
-         };
+         xmlH.send();        
  }
  
+
 
 
 
