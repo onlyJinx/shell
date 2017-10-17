@@ -1,1 +1,1 @@
-测试。。。。
+yum install git -y && git clone 
