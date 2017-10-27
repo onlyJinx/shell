@@ -91,6 +91,11 @@ User=root
 WantedBy=multi-user.target
 EOF
 
+###禁用ping###
+echo net.ipv4.icmp_echo_ignore_all=1>>/etc/sysctl.conf
+sysctl -p
+
+
 ###firewall oprt
 sed -i '$d' /etc/firewalld/zones/public.xml
 echo "  <port protocol=\"udp\" port=\"443\"/>" >> /etc/firewalld/zones/public.xml
