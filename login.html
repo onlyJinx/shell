@@ -10,6 +10,8 @@
                         var inp1 = document.getElementsByTagName('input')[0];
                         var inp2 = document.getElementsByTagName('input')[1];
                         var form = document.getElementsByTagName('form')[0];
+			
+			inp1.focus();
                         inp1.onkeyup=function(){
                             if(this.value.length===0){
                                 inp2.value='enter you password';
