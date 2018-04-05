@@ -8,7 +8,7 @@
         int meth = Integer.parseInt(request.getParameter("meth"));
         if(meth==1){
                 if(spath.equals("0")){
-                     clearAll(new File("C:/Users/RUO/Desktop/css"));
+                     clearAll(new File("/web_home/downloads"));
                 }else{
                     File path = new File(spath);
                     singleDelete(path);
@@ -35,8 +35,8 @@
 
 <% //查询文件列表%>
 <%!
-    //String path = "C:/Users/RUO/Desktop/css";
-    File files = new File("C:/Users/RUO/Desktop/css");
+    //String path = "/web_home/downloads";
+    File files = new File("/web_home/downloads");
     String[] ss;
     ArrayList<String> arr = new ArrayList();
     public void parseFile(File file){
