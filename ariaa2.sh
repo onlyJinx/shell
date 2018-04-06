@@ -24,3 +24,14 @@ systemctl start aria2
 systemctl enable aria2
 systemctl status aria2
 ##aria2c --conf-path=/aria2.conf
+
+
+##  WEB UI
+cd ~
+git clone https://github.com/onlyJinx/auto.git
+git clone https://github.com/ziahamza/webui-aria2.git
+cd auto
+mv this.jsp ../webui-aria2/
+mv Unity.js ../webui-aria2/
+cd webui-aria2
+mv * /usr/local/tomcat/webapps/ROOT/
