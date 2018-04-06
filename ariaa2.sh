@@ -4,4 +4,23 @@ tar zxvf aria2*
 cd aria2*
 ./configure
 make&make install
+
+mkdir /web_home
+mkdir /web_home/downloads
+mv aria2.conf /
+
+cat >/etc/systemd/system/aria2.service<< EOF
+[Unit]
+Description=aria2c
+After=network.target
+[Service]
+ExecStart=/usr/local/bin/aria2c --conf-path=/aria2.conf
+User=root
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl start aria2
+systemctl enable aria2
+systemctl status aria2
 ##aria2c --conf-path=/aria2.conf
