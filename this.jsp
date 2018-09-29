@@ -106,7 +106,7 @@
 <% //查可用储存空间 %>
 <%!
 	public long Roots(){
-		File sto = new File("C:/");
+		File sto = new File("/web_home/downloads");
 		return sto.getFreeSpace()/(long)1024/(long)1024;
 	}
 %>
