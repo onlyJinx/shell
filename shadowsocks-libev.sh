@@ -1,6 +1,6 @@
 ###搬瓦工默认禁用epel
-yum remove epel-release -y
-yum install epel-release -y
+#yum remove epel-release -y
+#yum install epel-release -y
 
 ###yum install gcc gettext autoconf libtool automake make pcre-devel asciidoc xmlto c-ares-devel libev-devel libsodium-devel mbedtls-devel -y
 yum install gcc gettext autoconf libtool automake make pcre-devel wget git vim asciidoc xmlto libev-devel -y
