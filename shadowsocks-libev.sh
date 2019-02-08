@@ -8,9 +8,9 @@ yum install gcc gettext autoconf libtool automake make pcre-devel wget git vim a
 
 
 ###Installation of MbedTLS
-wget https://tls.mbed.org/download/mbedtls-2.7.0-gpl.tgz
-tar xvf mbedtls-2.7.0-gpl.tgz
-cd mbedtls-2.7.0
+wget https://tls.mbed.org/download/mbedtls-2.16.0-gpl.tgz
+tar xvf mbedtls*gpl.tgz
+cd mbedtls*
 make SHARED=1 CFLAGS=-fPIC
 sudo make DESTDIR=/usr install
 cd ~
@@ -18,7 +18,7 @@ sudo ldconfig
 
 ###Installation of Libsodium
 #wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.13.tar.gz
-wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.16.tar.gz
+wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.17.tar.gz
 tar xvf libsodium-*.tar.gz
 cd libsodium-*
 ./configure --prefix=/usr && make
@@ -40,12 +40,13 @@ cd ~
 
 ###Installation of simple-obfs
 
-git clone https://github.com/shadowsocks/simple-obfs.git
-cd simple-obfs
-git submodule update --init --recursive
-./autogen.sh
-./configure && make
-sudo make install
+###obfs已弃用###
+#git clone https://github.com/shadowsocks/simple-obfs.git
+#cd simple-obfs
+#git submodule update --init --recursive
+#./autogen.sh
+#./configure && make
+#sudo make install
 
 
 
@@ -70,9 +71,7 @@ cat >/etc/shadowsocks-libev/config.json<< EOF
     "method":"xchacha20-ietf-poly1305",
     "fast_open": true,
     "nameserver": "8.8.8.8",
-    "mode": "tcp_and_udp",
-    "plugin":"obfs-server",
-    "plugin_opts":"obfs=tls"
+    "mode": "tcp_and_udp"
 
 }
 EOF
