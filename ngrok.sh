@@ -67,7 +67,7 @@ systemctl status ngrok
 
 
 
-##./ngrokd -domain="ngrok.ruor.club" -httpAddr=":80"
+##./ngrokd -domain="ngrok.ruor.club" -httpAddr=":80" -httpsAddr=":890"
 
 
 
