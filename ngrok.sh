@@ -31,7 +31,7 @@ cp -f /root/device.crt /root/ngrok/assets/server/tls/snakeoil.crt
 cp -f /root/device.key /root/ngrok/assets/server/tls/snakeoil.key
 
 ##GO环境变量
-cd /usr/local/go/src/
+cd /usr/lib/golang/src/
 GOOS=windows GOARCH=amd64 CGO_ENABLED=0 ./make.bash
 
 #编译服务端&客户端
