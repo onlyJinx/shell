@@ -8,7 +8,8 @@ yum install gcc gettext autoconf libtool automake make pcre-devel wget git vim a
 
 
 ###Installation of MbedTLS
-wget https://tls.mbed.org/download/mbedtls-2.16.0-gpl.tgz
+###wget https://tls.mbed.org/download/mbedtls-2.16.0-gpl.tgz
+wget https://tls.mbed.org/download/mbedtls-2.16.2-apache.tgz
 tar xvf mbedtls*gpl.tgz
 cd mbedtls*
 make SHARED=1 CFLAGS=-fPIC
@@ -18,7 +19,8 @@ sudo ldconfig
 
 ###Installation of Libsodium
 #wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.13.tar.gz
-wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.17.tar.gz
+#wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.17.tar.gz
+wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.18.tar.gz
 tar xvf libsodium-*.tar.gz
 cd libsodium-*
 ./configure --prefix=/usr && make
