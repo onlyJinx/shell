@@ -28,20 +28,20 @@ systemctl status aria2
 
 
 ##  WEB UI
-cd ~
-git clone https://github.com/onlyJinx/auto.git
-git clone https://github.com/ziahamza/webui-aria2.git
-mv auto/this.jsp ~/webui-aria2/
-mv auto/Unity.js ~/webui-aria2/
-mv auto/pisi.css ~/webui-aria2/css/
-cd webui-aria2
-sed '15 i  <script src="Unity.js"></script>' -i index.html
-cd css
-mv style.css style.cs
-cat style.cs pisi.css > style.css
-rm -f style.cs
-rm -f pisi.css
-mv ~/webui-aria2/* /usr/local/tomcat/webapps/ROOT/
+#cd ~
+#git clone https://github.com/onlyJinx/auto.git
+#git clone https://github.com/ziahamza/webui-aria2.git
+#mv auto/this.jsp ~/webui-aria2/
+#mv auto/Unity.js ~/webui-aria2/
+#mv auto/pisi.css ~/webui-aria2/css/
+#cd webui-aria2
+#sed '15 i  <script src="Unity.js"></script>' -i index.html
+#cd css
+#mv style.css style.cs
+#cat style.cs pisi.css > style.css
+#rm -f style.cs
+#rm -f pisi.css
+#mv ~/webui-aria2/* /usr/local/tomcat/webapps/ROOT/
 
 
 
