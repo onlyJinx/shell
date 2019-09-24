@@ -32,7 +32,7 @@ sysctl -p
 ###查看tcp_bbr内核模块是否启动
 lsmod | grep bbr
 
-#yum update -y
+#Please reboot your VPS after run command "yum update -y"
 
 #ping 127.0.0.1 -c 5 >>null
 #reboot
