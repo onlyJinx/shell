@@ -71,7 +71,7 @@ cat >/etc/shadowsocks-libev/config.json<< EOF
     "server":"0.0.0.0",
     "server_port":443,
     "local_port":1080,
-    "password":"12345m",
+    "password":"nPB4bF5K8+apre.",
     "timeout":60,
     "method":"xchacha20-ietf-poly1305",
     "fast_open": true,
@@ -111,16 +111,17 @@ echo "  <port protocol=\"tcp\" port=\"28532\"/>" >> /etc/firewalld/zones/public.
 echo "</zone>" >> /etc/firewalld/zones/public.xml
 firewall-cmd --reload > null
 
-systemctl start ssl&&systemctl enable ssl&&systemctl status ssl
+systemctl start ssl&&systemctl enable ssl
 ### remove the file
 cd /root && rm -fr mbedtls* shadowsocks-libev libsodium* test.sh c-ares auto
 
 clear
+ss -lnp|grep 443
 echo -e port:"          ""\e[31m\e[1m443\e[0m"
-echo -e password:"      ""\e[31m\e[1m12345m\e[0m"
+echo -e password:"      ""\e[31m\e[1mnPB4bF5K8+apre.\e[0m"
 echo -e method:"        ""\e[31m\e[1mxchacha20-ietf-poly1305\e[0m"
-echo -e plugin:"        ""\e[31m\e[1mobfs-server\e[0m"
-echo -e plugin_opts:"   ""\e[31m\e[1mobfs=tls\e[0m"
+echo -e plugin:"        ""\e[31m\e[1mv2ray-plugin\e[0m"
+echo -e plugin_opts:"   ""\e[31m\e[1mhttp\e[0m"
 echo -e config.json:"   ""\e[31m\e[1m/etc/shadowsocks-libev/config.json\n\n\e[0m"
 echo -e use \""\e[31m\e[1msystemctl start ssl\e[0m"\" run the shadowsocks-libev in background
 echo -e "\e[31m\e[1mhttps://github.com/shadowsocks\e[0m"
