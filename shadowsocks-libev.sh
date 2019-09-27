@@ -51,6 +51,9 @@ cd ~
 #sudo make install
 
 
+wget https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.1.0/v2ray-plugin-linux-amd64-v1.1.0.tar.gz
+tar zxvf v2ray-plugin* && mv v2ray-plugin-linux-amd64 /etc/shadowsocks-libev/v2ray-plugin &&rm -f v2ray-plugin*
+
 
 ###Installation of shadowsocks-libev
 git clone https://github.com/shadowsocks/shadowsocks-libev.git
@@ -73,6 +76,8 @@ cat >/etc/shadowsocks-libev/config.json<< EOF
     "method":"xchacha20-ietf-poly1305",
     "fast_open": true,
     "nameserver": "8.8.8.8",
+    "plugin":"/etc/shadowsocks-libev/v2ray-plugin",
+    "plugin_opts":"server",
     "mode": "tcp_and_udp"
 
 }
