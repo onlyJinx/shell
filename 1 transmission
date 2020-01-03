@@ -1,0 +1,39 @@
+yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-devel intltool libiconv curl-devel
+
+wget https://build.transmissionbt.com/job/trunk-linux/lastSuccessfulBuild/artifact/transmission-master-r44fc571a67.tar.xz
+tar xf transmission-master-r44fc571a67.tar.xz && cd transmission-3.00+
+
+./autogen.sh && make && make install
+
+##初始化transmission配置文件 
+transmission-daemon -g /usr/local/transmission
+
+##crate service
+cat >/etc/systemd/system/bt.service<< EOF
+[Unit]
+Description=transmission
+After=network.target
+[Service]
+ExecStart=/usr/local/bin/transmission-daemon -g /usr/local/transmission
+User=root
+[Install]
+WantedBy=multi-user.target
+EOF
+
+## change config
+    "rpc-host-whitelist-enabled": true,
+    "rpc-password": "{0d26d999c3c02d7be13ec0f705029558044c2b12U0YDDyPj",
+
+
+firewall-cmd --zone=public --add-port=51413/tcp --permanent
+firewall-cmd --zone=public --add-port=51413/udp --permanent
+firewall-cmd --zone=public --add-port=9091/tcp --permanent
+firewall-cmd --zone=public --add-port=9091/udp --permanent
+
+wget https://github.com/ronggang/transmission-web-control/archive/v1.6.0-beta2.tar.gz
+
+tar zxvf v1.6.0-beta2.tar.gz
+
+mv /usr/local/share/transmission/web /usr/local/share/transmission/web_backup
+mkdir /usr/local/share/transmission/web/
+cp -r /root/transmission-web-control-1.6.0-beta2/src/* /usr/local/share/transmission/web/
