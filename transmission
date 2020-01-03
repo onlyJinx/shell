@@ -29,6 +29,7 @@ firewall-cmd --zone=public --add-port=51413/tcp --permanent
 firewall-cmd --zone=public --add-port=51413/udp --permanent
 firewall-cmd --zone=public --add-port=9091/tcp --permanent
 firewall-cmd --zone=public --add-port=9091/udp --permanent
+firewall-cmd --reload
 
 wget https://github.com/ronggang/transmission-web-control/archive/v1.6.0-beta2.tar.gz
 
