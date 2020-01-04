@@ -3,17 +3,10 @@ yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-
 wget https://build.transmissionbt.com/job/trunk-linux/lastSuccessfulBuild/artifact/transmission-master-r44fc571a67.tar.xz
 tar xf transmission-master-r44fc571a67.tar.xz && cd transmission-3.00+
 
-./autogen.sh && make && make install
-
-##添加运行用户
-useradd transmission
+./configrue && make && make install
 
 ##默认配置文件
 ##vi /root/.config/transmission-daemon/settings.json
-
-##初始化transmission配置文件 
-transmission-daemon -g /web_home/download
-
 
 ##crate service
 cat >/etc/systemd/system/bt.service<< EOF
@@ -32,15 +25,14 @@ NoNewPrivileges=true
 WantedBy=multi-user.target
 EOF
 
+##首次启动，生成配置文件
+systemctl start transmission-daemon.service
+systemctl stop transmission-daemon.service
+
 ##systemctl status transmission-daemon.service
-##systemctl start transmission-daemon.service
-##systemctl stop transmission-daemon.service
 
-##vi /web_home/download/settings.json
 ## change config
-    "rpc-host-whitelist-enabled": true,
-    "rpc-password": "{0d26d999c3c02d7be13ec0f705029558044c2b12U0YDDyPj",
-
+sed -i '/rpc-whitelist-enabled/ s/true/false' /root/.config/transmission-daemon/settings.json
 
 firewall-cmd --zone=public --add-port=51413/tcp --permanent
 firewall-cmd --zone=public --add-port=51413/udp --permanent
@@ -48,10 +40,9 @@ firewall-cmd --zone=public --add-port=9091/tcp --permanent
 firewall-cmd --zone=public --add-port=9091/udp --permanent
 firewall-cmd --reload
 
+##替换webUI
 wget https://github.com/ronggang/transmission-web-control/archive/v1.6.0-beta2.tar.gz
-
 tar zxvf v1.6.0-beta2.tar.gz
-
 mv /usr/local/share/transmission/web /usr/local/share/transmission/web_backup
 mkdir /usr/local/share/transmission/web/
 cp -r /root/transmission-web-control-1.6.0-beta2/src/* /usr/local/share/transmission/web/
