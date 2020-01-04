@@ -12,7 +12,7 @@ useradd transmission
 ##/root/.config/transmission-daemon
 
 ##初始化transmission配置文件 
-transmission-daemon -g /usr/local/transmission
+transmission-daemon -g /web_home/download
 
 
 ##crate service
@@ -25,7 +25,7 @@ After=network.target
 [Service]
 User=transmission
 Type=simple
-ExecStart=/usr/local/bin/transmission-daemon -g /usr/local/transmission -f --log-error
+ExecStart=/usr/local/bin/transmission-daemon -g /web_home/download -f --log-error
 ExecReload=/bin/kill -s HUP $MAINPID
 NoNewPrivileges=true
 
@@ -34,7 +34,7 @@ WantedBy=multi-user.target
 EOF
 
 
-##vi /usr/local/transmission/settings.json
+##vi /web_home/download/settings.json
 ## change config
     "rpc-host-whitelist-enabled": true,
     "rpc-password": "{0d26d999c3c02d7be13ec0f705029558044c2b12U0YDDyPj",
