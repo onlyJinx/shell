@@ -9,7 +9,7 @@ tar xf transmission-master-r44fc571a67.tar.xz && cd transmission-3.00+
 useradd transmission
 
 ##默认配置文件
-##/root/.config/transmission-daemon
+##vi /root/.config/transmission-daemon/settings.json
 
 ##初始化transmission配置文件 
 transmission-daemon -g /web_home/download
