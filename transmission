@@ -3,13 +3,13 @@ yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-
 wget https://build.transmissionbt.com/job/trunk-linux/lastSuccessfulBuild/artifact/transmission-master-r44fc571a67.tar.xz
 tar xf transmission-master-r44fc571a67.tar.xz && cd transmission-3.00+
 
-./configrue && make && make install
+./configure && make && make install
 
 ##默认配置文件
 ##vi /root/.config/transmission-daemon/settings.json
 
 ##crate service
-cat >/etc/systemd/system/bt.service<< EOF
+cat >/etc/systemd/system/transmission-daemon.service<< EOF
 [Unit]
 Description=Transmission BitTorrent Daemon
 After=network.target
