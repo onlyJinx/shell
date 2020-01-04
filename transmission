@@ -33,6 +33,9 @@ NoNewPrivileges=true
 WantedBy=multi-user.target
 EOF
 
+##systemctl status transmission-daemon.service
+##systemctl start transmission-daemon.service
+##systemctl stop transmission-daemon.service
 
 ##vi /web_home/download/settings.json
 ## change config
