@@ -18,7 +18,7 @@ After=network.target
 User=root
 Type=notify
 ExecStart=/usr/local/bin/transmission-daemon -f --log-error
-ExecReload=/bin/kill -s HUP $MAINPID
+ExecReload=/bin/kill -s HUP \$MAINPID
 NoNewPrivileges=true
 
 [Install]
