@@ -16,3 +16,11 @@ User=root
 [Install]
 WantedBy=multi-user.target
 EOF
+
+##安装nginx
+
+rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+yum install nginx
+
+##webui
+git clone https://github.com/ziahamza/webui-aria2.git
