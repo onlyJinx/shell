@@ -17,6 +17,27 @@ User=root
 WantedBy=multi-user.target
 EOF
 
+
+##aria2 config file
+
+cat >/aria2.conf<< EOF
+    rpc-secret=crazy_0
+    enable-rpc=true
+    rpc-allow-origin-all=true
+    rpc-listen-all=true
+    max-concurrent-downloads=5
+    continue=true
+    max-connection-per-server=5
+    min-split-size=10M
+    split=16
+    max-overall-download-limit=0
+    max-download-limit=0
+    max-overall-upload-limit=0
+    max-upload-limit=0
+    dir=/web_home/downloads
+    file-allocation=prealloc
+EOF
+
 ##安装nginx
 
 rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
