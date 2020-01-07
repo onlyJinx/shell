@@ -21,6 +21,12 @@ EOF
 
 rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
 yum install nginx
+firewall-cmd --zone=public --add-port=80/tcp --permanent
 
 ##webui
-git clone https://github.com/ziahamza/webui-aria2.git
+git clone https://github.com/ziahamza/webui-aria2.git /root
+rm -fr /usr/share/nginx/html/*
+cp /root/webui-aria2/docs/* /usr/share/nginx/html/
+
+systemctl enable nginx
+systemctl start nginx
