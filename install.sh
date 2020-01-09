@@ -186,6 +186,7 @@ function transmission(){
 
 	## change config
 	sed -i '/rpc-whitelist-enabled/ s/true/false/' /root/.config/transmission-daemon/settings.json
+        sed -i '/rpc-host-whitelist-enabled/ s/true/false/' /root/.config/transmission-daemon/settings.json
 
 	firewall-cmd --zone=public --add-port=51413/tcp --permanent
 	firewall-cmd --zone=public --add-port=51413/udp --permanent
