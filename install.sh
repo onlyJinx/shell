@@ -1,5 +1,18 @@
 #!/bin/bash
 
+
+###状态码赋值给s
+return_code=$?
+function check(){
+        ###调用函数
+        ###函数名 参数1 参数2
+        echo $1
+        if [ "0" != "$return_code" ]; then
+                echo "$1编译失败，请手动检查"
+        fi
+}
+###check aria2
+
 function shadowsocks-libev(){
 
 	read -t 6 -p "请输入密码，直接回车则设置为默认密码: " passwd
