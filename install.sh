@@ -1,22 +1,62 @@
 #!/bin/bash
 
-
-###状态码赋值给s
-return_code=$?
 function check(){
-        ###调用函数
-        ###函数名 参数1 参数2
-        echo $1
-        if [ "0" != "$return_code" ]; then
-                echo "$1编译失败，请手动检查"
-        fi
+	###状态码赋值给s
+	return_code=$?
+	###调用函数
+	###函数名 参数1 参数2
+	if [ "0" != "$return_code" ]; then
+		echo "$1编译失败，请手动检查"
+		exit 0
+	fi
 }
+
+function check_port(){
+	read -p "请输入监听端口(默认$1):" port
+	port=${port:-$1}
+	myport=`ss -lnp|grep :$port`
+	#echo $port
+
+	if [ -n "$myport" ];then
+	        echo "端口$port已被占用，请输入其他端口"
+	        check_port $1
+	fi
+}
+
+
+function check_version(){
+	if [ -x "$(command -v $1)" ]; then
+		echo "$2已安装，是否继续覆盖安装？(Y/N)"
+		read -t 30 -p "" sel
+		if [ "y" == "$sel" ]; then
+			echo "继续执行安装"
+		else
+			echo "已取消安装"
+			exit 0
+		fi
+	fi
+}
+
+function download_dir(){
+
+	read -p "$1" dir
+	 if [ ! -d $dir ]; then
+	 	echo "文件夹不存在，已创建文件夹 $dir"
+	 	mkdir $dir
+	 fi
+}
+
+test
 ###check aria2
 
 function shadowsocks-libev(){
 
+	check_version ss-server shadowsocks
 	read -t 6 -p "请输入密码，直接回车则设置为默认密码: " passwd
 	passwd=${passwd:-nPB4bF5K8+apre.}
+
+	check_port 443
+
 	###echo "passwd=$passwd"
 	###搬瓦工默认禁用epel
 	#yum remove epel-release -y
@@ -38,11 +78,10 @@ function shadowsocks-libev(){
 	sudo ldconfig
 
 	###Installation of Libsodium
-	#wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.13.tar.gz
-	#wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.17.tar.gz
-	wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.18.tar.gz
-	tar xvf libsodium-*.tar.gz
-	cd libsodium-*
+	#wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.18.tar.gz
+	wget https://download.libsodium.org/libsodium/releases/LATEST.tar.gz
+	tar xvf LATEST.tar.gz
+	cd libsodium-stable
 	./configure --prefix=/usr && make
 	sudo make install
 	sudo ldconfig
@@ -80,6 +119,7 @@ function shadowsocks-libev(){
 	cd shadowsocks-libev
 	git submodule update --init --recursive
 	./autogen.sh && ./configure && make
+	check shadowsocks
 	sudo make install
 	mkdir /etc/shadowsocks-libev
 	###cp /root/shadowsocks-libev/debian/config.json /etc/shadowsocks-libev/config.json
@@ -89,7 +129,7 @@ function shadowsocks-libev(){
 	cat >/etc/shadowsocks-libev/config.json<<-EOF
 	{
 	    "server":"0.0.0.0",
-	    "server_port":443,
+	    "server_port":$port,
 	    "local_port":1080,
 	    "password":"$passwd",
 	    "timeout":60,
@@ -139,8 +179,8 @@ function shadowsocks-libev(){
 
 	clear
 	ss -lnp|grep 443
-	echo -e port:"          ""\e[31m\e[1m443\e[0m"
-	echo -e password:"      ""\e[31m\e[1mnPB4bF5K8+apre.\e[0m"
+	echo -e port:"          ""\e[31m\e[1m$port\e[0m"
+	echo -e password:"      ""\e[31m\e[1m$passwd\e[0m"
 	echo -e method:"        ""\e[31m\e[1mxchacha20-ietf-poly1305\e[0m"
 	echo -e plugin:"        ""\e[31m\e[1mv2ray-plugin\e[0m"
 	echo -e plugin_opts:"   ""\e[31m\e[1mhttp\e[0m"
@@ -151,12 +191,17 @@ function shadowsocks-libev(){
 
 function transmission(){
 
+
+	check_version transmission-daemon transmission
+	check_port 9091
+
 	yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-devel intltool libiconv curl-devel systemd-devel wget
 
 	wget https://build.transmissionbt.com/job/trunk-linux/lastSuccessfulBuild/artifact/transmission-master-r44fc571a67.tar.xz
 	tar xf transmission-master-r44fc571a67.tar.xz && cd transmission-3.00+
 
 	./configure && make && make install
+	check transmission
 
 	##默认配置文件
 	##vi /root/.config/transmission-daemon/settings.json
@@ -166,14 +211,12 @@ function transmission(){
 	[Unit]
 	Description=Transmission BitTorrent Daemon
 	After=network.target
-
 	[Service]
 	User=root
 	Type=notify
 	ExecStart=/usr/local/bin/transmission-daemon -f --log-error
 	ExecReload=/bin/kill -s HUP \$MAINPID
 	NoNewPrivileges=true
-
 	[Install]
 	WantedBy=multi-user.target
 	EOF
@@ -186,7 +229,11 @@ function transmission(){
 
 	## change config
 	sed -i '/rpc-whitelist-enabled/ s/true/false/' /root/.config/transmission-daemon/settings.json
-        sed -i '/rpc-host-whitelist-enabled/ s/true/false/' /root/.config/transmission-daemon/settings.json
+	sed -i '/rpc-host-whitelist-enabled/ s/true/false/' /root/.config/transmission-daemon/settings.json
+	#sed -i "/rpc-username/ s/:""/uname/" /root/.config/transmission-daemon/settings.json
+	sed -i '/rpc-port/ s/9091/$port/' /root/.config/transmission-daemon/settings.json
+	sed -i '/download-dir/d' /root/.config/transmission-daemon/settings.json
+	sed -i "/dht-enabled/a\    \"download-dir\": \"$dir\"," /root/.config/transmission-daemon/settings.json
 
 	firewall-cmd --zone=public --add-port=51413/tcp --permanent
 	firewall-cmd --zone=public --add-port=51413/udp --permanent
@@ -208,6 +255,10 @@ function transmission(){
 
 function aria2(){
 
+	check_version aria2c aria2
+	check_port 80
+	download_dir "输入下载文件保存路径"
+
 	yum install -y gcc-c++ bison libssh2-devel expat-devel gmp-devel nettle-devel libssh2-devel zlib-devel c-ares-devel gnutls-devel libgcrypt-devel libxml2-devel sqlite-devel gettext lzma-devel xz-devel gperftools gperftools-devel gperftools-libs jemalloc-devel trousers-devel
 
 	git clone https://github.com/aria2/aria2.git && cd aria2
@@ -215,6 +266,7 @@ function aria2(){
 	##静态编译
 	autoreconf -i && ./configure ARIA2_STATIC=yes
 	make && make install
+	check aria2
 
 	cat >/etc/systemd/system/aria2.service<<-EOF
 	[Unit]
@@ -244,7 +296,7 @@ function aria2(){
 	    max-download-limit=0
 	    max-overall-upload-limit=0
 	    max-upload-limit=0
-	    dir=/web_home/downloads
+	    dir=$dir
 	    file-allocation=prealloc
 	EOF
 
@@ -262,6 +314,9 @@ function aria2(){
 	git clone https://github.com/ziahamza/webui-aria2.git
 	rm -fr /usr/share/nginx/html/*
 	cp /root/webui-aria2/docs/* /usr/share/nginx/html/
+	##config file
+	##vi /etc/nginx/conf.d/default.conf
+	sed -i '/listen/ s/80/$port/' /etc/nginx/conf.d/default.conf
 
 	systemctl enable nginx
 	systemctl start nginx
@@ -314,7 +369,105 @@ function Up_kernel(){
 	###引用：https://legolasng.github.io/2017/05/08/upgrade-centos-kernel/#3安装新版本内核
 }
 
-select option in "shadowsocks-libev" "transmission" "aria2" "Up_kernel"
+function ngrok(){
+
+
+	yum install -y epel-release
+	yum install -y mercurial git bzr subversion wget golang
+
+	#####手动编译GO环境
+	##wget https://dl.google.com/go/go1.11.5.linux-amd64.tar.gz
+	#tar zxvf go*linux-amd64.tar.gz -C /usr/local
+	#mkdir $HOME/go
+	#echo 'export GOROOT=/usr/local/go'>> ~/.bashrc
+	#echo 'export GOPATH=$HOME/go'>> ~/.bashrc
+	#echo 'export PATH=$PATH:$GOROOT/bin'>> ~/.bashrc
+	#source $HOME/.bashrc
+	########END
+
+	git clone https://github.com/inconshreveable/ngrok.git
+	read -p "输入域名:(包含www) " domain
+
+	clear
+	echo "http监听端口"
+	check_port 80
+	http_port=$port
+	echo "http监听端口为 $http_port"
+
+	clear
+	echo "https监听端口"
+	check_port 443
+	https_port=$port
+	echo "https监听端口为 $https_port"
+
+
+
+	export NGROK_DOMAIN="$domain"
+
+	openssl genrsa -out rootCA.key 2048
+	openssl req -x509 -new -nodes -key rootCA.key -subj "/CN=$NGROK_DOMAIN" -days 5000 -out rootCA.pem
+	openssl genrsa -out device.key 2048
+	openssl req -new -key device.key -subj "/CN=$NGROK_DOMAIN" -out device.csr
+	openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 5000
+
+	##激活cp强制覆盖
+	echo "unalias cp">>  ~/.bash_profile
+	. ~/.bash_profile
+	cp -f /root/rootCA.pem /root/ngrok/assets/client/tls/ngrokroot.crt
+	cp -f /root/device.crt /root/ngrok/assets/server/tls/snakeoil.crt
+	cp -f /root/device.key /root/ngrok/assets/server/tls/snakeoil.key
+
+	##GO环境变量
+	cd /usr/lib/golang/src/
+	GOOS=windows GOARCH=amd64 CGO_ENABLED=0 ./make.bash
+
+	#编译服务端&客户端
+	cd ~/ngrok
+	GOOS=linux GOARCH=amd64 make release-server&&GOOS=windows GOARCH=amd64 make release-client
+
+	if ![ -x "/root/ngrok/bin/ngrokd" ]; then
+		echo "编译失败，请手动检查！！！"
+		exit 1
+	fi
+
+	cp /root/ngrok/bin/ngrokd /usr/local/bin/ngrokd
+	cp /root/ngrok/bin/windows_amd64/ngrok.exe /tmp/
+
+	firewall-cmd --zone=public --add-port=$https_port/tcp --permanent
+	firewall-cmd --zone=public --add-port=$https_port/udp --permanent
+	firewall-cmd --zone=public --add-port=$http_port/tcp --permanent
+	firewall-cmd --zone=public --add-port=$http_port/udp --permanent
+	firewall-cmd --reload
+
+	###后台脚本
+
+	echo "/usr/local/bin/ngrokd -domain=\"${NGROK_DOMAIN:4}\" -httpAddr=\":$http_port\"  -httpsAddr=\":$https_port\"" > /usr/local/bin/start.sh
+
+	###开机服务
+	cat >/etc/systemd/system/ngrok.service<<-EOF
+	[Unit]
+	Description=Ngrok Server
+	After=network.target
+	[Service]
+	ExecStart=/usr/local/bin/ngrokd -domain=\"${NGROK_DOMAIN:4}\" -httpAddr=\":$http_port\"  -httpsAddr=\":$https_port\"
+	User=root
+	[Install]
+	WantedBy=multi-user.target
+	EOF
+	systemctl start ngrok
+	systemctl enable ngrok
+	systemctl status ngrok
+
+	clear
+	echo "按任意键清理残留文件...(ctrl+C取消)"
+	read -t 30
+	rm -fr device.crt  device.csr  device.key  ngrok  rootCA.key  rootCA.pem  rootCA.srl
+
+	##./ngrokd -domain="ngrok.ruor.club" -httpAddr=":80" -httpsAddr=":890"
+	##scp root@www.iruohui.top:/root/ngrok/bin/windows_amd64/ngrok.exe c:\temp
+}
+
+select option in "shadowsocks-libev" "transmission" "aria2" "Up_kernel" "ngrok"
 do
 	case $option in
 		"shadowsocks-libev")
@@ -328,6 +481,9 @@ do
 			break;;
 		"Up_kernel")
 			Up_kernel
+			break;;
+		"ngrok")
+			ngrok
 			break;;
 		*)
 			echo "nothink to do"
