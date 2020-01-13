@@ -2,10 +2,10 @@
 
 function check(){
 	###状态码赋值给s
-	return_code=$?
+	#return_code=$?
 	###调用函数
 	###函数名 参数1 参数2
-	if [ "0" != "$return_code" ]; then
+	if [ "0" != "$?" ]; then
 		echo "$1编译失败，请手动检查"
 		exit 0
 	fi
@@ -23,7 +23,6 @@ function check_port(){
 	fi
 }
 
-
 function check_version(){
 	if [ -x "$(command -v $1)" ]; then
 		echo "$2已安装，是否继续覆盖安装？(Y/N)"
@@ -37,9 +36,20 @@ function check_version(){
 	fi
 }
 
+function check_fin(){
+	if [ -x "$(command -v $1)" ]; then
+		echo "编译安装完成"
+	else
+		echo "编译失败，请手动检查！！"
+		exit 1
+	fi
+}
+
 function download_dir(){
 
+	#函数 提示语 默认路劲
 	read -p "$1" dir
+	dir=${dir:-$2}
 	 if [ ! -d $dir ]; then
 	 	echo "文件夹不存在，已创建文件夹 $dir"
 	 	mkdir $dir
@@ -52,7 +62,7 @@ test
 function shadowsocks-libev(){
 
 	check_version ss-server shadowsocks
-	read -t 6 -p "请输入密码，直接回车则设置为默认密码: " passwd
+	read -t 60 -p "请输入密码，直接回车则设置为默认密码: nPB4bF5K8+apre." passwd
 	passwd=${passwd:-nPB4bF5K8+apre.}
 
 	check_port 443
@@ -74,6 +84,7 @@ function shadowsocks-libev(){
 	cd mbedtls*
 	make SHARED=1 CFLAGS=-fPIC
 	sudo make DESTDIR=/usr install
+	check "shadowsocks依赖MbedTLS"
 	cd ~
 	sudo ldconfig
 
@@ -84,6 +95,7 @@ function shadowsocks-libev(){
 	cd libsodium-stable
 	./configure --prefix=/usr && make
 	sudo make install
+	check "shadowsocks依赖Libsodium"
 	sudo ldconfig
 	cd ~
 
@@ -95,6 +107,7 @@ function shadowsocks-libev(){
 	autoconf configure.ac
 	./configure --prefix=/usr && make
 	sudo make install
+	check "shadowsocks依赖c-ares"
 	sudo ldconfig
 	cd ~
 	###安装方法引用http://blog.sina.com.cn/s/blog_6c4a60110101342m.html
@@ -119,8 +132,12 @@ function shadowsocks-libev(){
 	cd shadowsocks-libev
 	git submodule update --init --recursive
 	./autogen.sh && ./configure && make
-	check shadowsocks
+	##检查编译返回的状态码
+	check "ShadowSocks-libev"
 	sudo make install
+
+	###尝试运行程序
+    check_fin "ss-server"
 	mkdir /etc/shadowsocks-libev
 	###cp /root/shadowsocks-libev/debian/config.json /etc/shadowsocks-libev/config.json
 
@@ -167,25 +184,25 @@ function shadowsocks-libev(){
 
 	###firewall oprt
 
-	firewall-cmd --zone=public --add-port=443/udp --permanent
-	firewall-cmd --zone=public --add-port=443/udp --permanent
+	firewall-cmd --zone=public --add-port=$port/udp --permanent
+	firewall-cmd --zone=public --add-port=$port/udp --permanent
 
 	firewall-cmd --reload 
 
 
 	systemctl start ssl&&systemctl enable ssl
 	### remove the file
-	cd /root && rm -fr mbedtls* shadowsocks-libev libsodium* test.sh c-ares auto
+	cd /root && rm -fr mbedtls* shadowsocks-libev libsodium* LATEST.tar.gz c-ares
 
 	clear
-	ss -lnp|grep 443
+	###ss -lnp|grep 443
 	echo -e port:"          ""\e[31m\e[1m$port\e[0m"
 	echo -e password:"      ""\e[31m\e[1m$passwd\e[0m"
 	echo -e method:"        ""\e[31m\e[1mxchacha20-ietf-poly1305\e[0m"
 	echo -e plugin:"        ""\e[31m\e[1mv2ray-plugin\e[0m"
 	echo -e plugin_opts:"   ""\e[31m\e[1mhttp\e[0m"
 	echo -e config.json:"   ""\e[31m\e[1m/etc/shadowsocks-libev/config.json\n\n\e[0m"
-	echo -e use \""\e[31m\e[1msystemctl start ssl\e[0m"\" run the shadowsocks-libev in background
+	echo -e use \""\e[31m\e[1msystemctl status ssl\e[0m"\" run the shadowsocks-libev in background
 	echo -e "\e[31m\e[1mhttps://github.com/shadowsocks\e[0m"
 }
 
@@ -193,21 +210,27 @@ function transmission(){
 
 
 	check_version transmission-daemon transmission
+	clear
 	check_port 9091
 	clear
-	read -t 6 -p "请输入密码，直接回车则设置为默认密码: transmission2020" passwd
+	read -p "请输入密码，直接回车则设置为默认密码 transmission2020:  " passwd
 	passwd=${passwd:-transmission2020}
 	clear
-	read -t 6 -p "请输入用户名，直接回车则设置为默认用户: transmission" uname
+	read -p "请输入用户名，直接回车则设置为默认用户 transmission:  " uname
 	uname=${uname:-transmission}
+	clear
+	download_dir "输入下载文件保存路径(默认/usr/downloads): " "/usr/downloads"
+	check
 	yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-devel intltool libiconv curl-devel systemd-devel wget
 
 	wget https://build.transmissionbt.com/job/trunk-linux/lastSuccessfulBuild/artifact/transmission-master-r44fc571a67.tar.xz
 	tar xf transmission-master-r44fc571a67.tar.xz && cd transmission-3.00+
 
 	./configure && make && make install
+	###检查返回状态码
 	check transmission
-
+	###尝试运行程序
+	check_fin "transmission-daemon"
 	##默认配置文件
 	##vi /root/.config/transmission-daemon/settings.json
 
@@ -235,16 +258,18 @@ function transmission(){
 	## change config
 	sed -i '/rpc-whitelist-enabled/ s/true/false/' /root/.config/transmission-daemon/settings.json
 	sed -i '/rpc-host-whitelist-enabled/ s/true/false/' /root/.config/transmission-daemon/settings.json
+	sed -i '/rpc-authentication-required/ s/false/true/' /root/.config/transmission-daemon/settings.json
 	sed -i "/rpc-username/ s/\"\"/\"$uname\"/" /root/.config/transmission-daemon/settings.json
 	sed -i "/rpc-port/ s/9091/$port/" /root/.config/transmission-daemon/settings.json
 	sed -i ":download-dir: s:\/root\/Downloads:$dir:" /root/.config/transmission-daemon/settings.json
-	sed -i 'rpc-password' /root/.config/transmission-daemon/settings.json
+	sed -i '/rpc-passwor/d' /root/.config/transmission-daemon/settings.json
 	#sed -i "/dht-enabled/a\    \"download-dir\": \"$dir\"," /root/.config/transmission-daemon/settings.json
+	sed -i "/rpc-host-whitelist-enabled/a \"rpc-password\": \"$passwd\"," /root/.config/transmission-daemon/settings.json
 
 	firewall-cmd --zone=public --add-port=51413/tcp --permanent
 	firewall-cmd --zone=public --add-port=51413/udp --permanent
-	firewall-cmd --zone=public --add-port=9091/tcp --permanent
-	firewall-cmd --zone=public --add-port=9091/udp --permanent
+	firewall-cmd --zone=public --add-port=$port/tcp --permanent
+	firewall-cmd --zone=public --add-port=$port/udp --permanent
 	firewall-cmd --reload
 
 	##替换webUI
@@ -257,13 +282,24 @@ function transmission(){
 
 	systemctl start transmission-daemon.service
 	systemctl enable transmission-daemon.service
+
+	clear
+
+	echo -e port:"          ""\e[31m\e[1m$port\e[0m"
+	echo -e password:"      ""\e[31m\e[1m$passwd\e[0m"
+	echo -e download_dir:"      ""\e[31m\e[1m$dir\e[0m"
+	echo -e config.json:"   ""\e[31m\e[1m/root/.config/transmission-daemon/settings.json\n\n\e[0m"
 }
 
 function aria2(){
 
 	check_version aria2c aria2
 	check_port 80
-	download_dir "输入下载文件保存路径"
+	clear
+	download_dir "输入下载文件保存路径(默认/usr/downloads): " "/usr/downloads"
+	clear
+	read -p "输入密码(默认密码crazy_0)： " key
+	key=${key:-crazy_0}
 
 	yum install -y gcc-c++ bison libssh2-devel expat-devel gmp-devel nettle-devel libssh2-devel zlib-devel c-ares-devel gnutls-devel libgcrypt-devel libxml2-devel sqlite-devel gettext lzma-devel xz-devel gperftools gperftools-devel gperftools-libs jemalloc-devel trousers-devel
 
@@ -272,8 +308,12 @@ function aria2(){
 	##静态编译
 	autoreconf -i && ./configure ARIA2_STATIC=yes
 	make && make install
-	check aria2
 
+	###相关编译报错引用https://weair.xyz/build-aria2/
+	check aria2
+	###尝试运行程序
+	clear
+	check_fin "aria2c"
 	cat >/etc/systemd/system/aria2.service<<-EOF
 	[Unit]
 	Description=aria2c
@@ -289,7 +329,7 @@ function aria2(){
 	##aria2 config file
 
 	cat >/aria2.conf<<-EOF
-	    rpc-secret=crazy_0
+	    rpc-secret=$key
 	    enable-rpc=true
 	    rpc-allow-origin-all=true
 	    rpc-listen-all=true
@@ -310,8 +350,8 @@ function aria2(){
 
 	rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
 	yum install nginx -y
-	firewall-cmd --zone=public --add-port=80/tcp --permanent
-	firewall-cmd --zone=public --add-port=80/udp --permanent
+	firewall-cmd --zone=public --add-port=$port/tcp --permanent
+	firewall-cmd --zone=public --add-port=$port/udp --permanent
 	firewall-cmd --zone=public --add-port=6800/tcp --permanent
 	firewall-cmd --zone=public --add-port=6800/udp --permanent
 
@@ -322,12 +362,18 @@ function aria2(){
 	cp /root/webui-aria2/docs/* /usr/share/nginx/html/
 	##config file
 	##vi /etc/nginx/conf.d/default.conf
-	sed -i '/listen/ s/80/$port/' /etc/nginx/conf.d/default.conf
-
+	sed -i "/listen/ s/80/$port/" /etc/nginx/conf.d/default.conf
+	
 	systemctl enable nginx
 	systemctl start nginx
 	systemctl enable aria2
 	systemctl start aria2
+	clear
+	echo -e port:"          ""\e[31m\e[1m$port\e[0m"
+	echo -e password:"      ""\e[31m\e[1m$key\e[0m"
+	echo -e download_dir:"      ""\e[31m\e[1m$dir\e[0m"
+	echo -e config.json:"   ""\e[31m\e[1m/aria2.conf\n\n\e[0m"
+
 }
 
 function Up_kernel(){
