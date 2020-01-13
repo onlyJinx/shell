@@ -194,7 +194,12 @@ function transmission(){
 
 	check_version transmission-daemon transmission
 	check_port 9091
-
+	clear
+	read -t 6 -p "请输入密码，直接回车则设置为默认密码: transmission2020" passwd
+	passwd=${passwd:-transmission2020}
+	clear
+	read -t 6 -p "请输入用户名，直接回车则设置为默认用户: transmission" uname
+	uname=${uname:-transmission}
 	yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-devel intltool libiconv curl-devel systemd-devel wget
 
 	wget https://build.transmissionbt.com/job/trunk-linux/lastSuccessfulBuild/artifact/transmission-master-r44fc571a67.tar.xz
@@ -230,10 +235,11 @@ function transmission(){
 	## change config
 	sed -i '/rpc-whitelist-enabled/ s/true/false/' /root/.config/transmission-daemon/settings.json
 	sed -i '/rpc-host-whitelist-enabled/ s/true/false/' /root/.config/transmission-daemon/settings.json
-	#sed -i "/rpc-username/ s/:""/uname/" /root/.config/transmission-daemon/settings.json
-	sed -i '/rpc-port/ s/9091/$port/' /root/.config/transmission-daemon/settings.json
-	sed -i '/download-dir/d' /root/.config/transmission-daemon/settings.json
-	sed -i "/dht-enabled/a\    \"download-dir\": \"$dir\"," /root/.config/transmission-daemon/settings.json
+	sed -i "/rpc-username/ s/\"\"/\"$uname\"/" /root/.config/transmission-daemon/settings.json
+	sed -i "/rpc-port/ s/9091/$port/" /root/.config/transmission-daemon/settings.json
+	sed -i ":download-dir: s:\/root\/Downloads:$dir:" /root/.config/transmission-daemon/settings.json
+	sed -i 'rpc-password' /root/.config/transmission-daemon/settings.json
+	#sed -i "/dht-enabled/a\    \"download-dir\": \"$dir\"," /root/.config/transmission-daemon/settings.json
 
 	firewall-cmd --zone=public --add-port=51413/tcp --permanent
 	firewall-cmd --zone=public --add-port=51413/udp --permanent
