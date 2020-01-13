@@ -438,7 +438,7 @@ function ngrok(){
 	########END
 
 	git clone https://github.com/inconshreveable/ngrok.git
-	read -p "输入域名:(包含www) " domain
+	read -p "输入域名:(包含www)  " domain
 
 	clear
 	echo "http监听端口"
@@ -489,19 +489,21 @@ function ngrok(){
 	firewall-cmd --zone=public --add-port=$https_port/udp --permanent
 	firewall-cmd --zone=public --add-port=$http_port/tcp --permanent
 	firewall-cmd --zone=public --add-port=$http_port/udp --permanent
+	firewall-cmd --zone=public --add-port=4443/tcp --permanent
+	firewall-cmd --zone=public --add-port=4443/udp --permanent
 	firewall-cmd --reload
 
 	###后台脚本
 
-	echo "/usr/local/bin/ngrokd -domain=\"${NGROK_DOMAIN:4}\" -httpAddr=\":$http_port\"  -httpsAddr=\":$https_port\"" > /usr/local/bin/start.sh
-
+	#echo "/usr/local/bin/ngrokd -domain=\"${NGROK_DOMAIN:4}\" -httpAddr=\":$http_port\"  -httpsAddr=\":$https_port\"" > /usr/local/bin/start.sh
+	############################写入service时-domain及-httpAddr里的数值不加引号，直接在command运行才加引号！！！
 	###开机服务
 	cat >/etc/systemd/system/ngrok.service<<-EOF
 	[Unit]
 	Description=Ngrok Server
 	After=network.target
 	[Service]
-	ExecStart=/usr/local/bin/ngrokd -domain=\"${NGROK_DOMAIN:4}\" -httpAddr=\":$http_port\"  -httpsAddr=\":$https_port\"
+	ExecStart=/usr/local/bin/ngrokd -domain=${NGROK_DOMAIN:4} -httpAddr=:$http_port  -httpsAddr=:$https_port
 	User=root
 	[Install]
 	WantedBy=multi-user.target
@@ -513,10 +515,11 @@ function ngrok(){
 	clear
 	echo "按任意键清理残留文件...(ctrl+C取消)"
 	read -t 30
+	cd ~
 	rm -fr device.crt  device.csr  device.key  ngrok  rootCA.key  rootCA.pem  rootCA.srl
 
 	##./ngrokd -domain="ngrok.ruor.club" -httpAddr=":80" -httpsAddr=":890"
-	##scp root@www.iruohui.top:/root/ngrok/bin/windows_amd64/ngrok.exe c:\temp
+	##scp root@www.iruohui.top:/tmp/ngrok.exe c:\temp
 }
 
 select option in "shadowsocks-libev" "transmission" "aria2" "Up_kernel" "ngrok"
