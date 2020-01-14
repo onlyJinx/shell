@@ -422,20 +422,8 @@ function Up_kernel(){
 }
 
 function ngrok(){
-
-
-	yum install -y epel-release
-	yum install -y mercurial git bzr subversion wget golang
-
-	#####手动编译GO环境
-	##wget https://dl.google.com/go/go1.11.5.linux-amd64.tar.gz
-	#tar zxvf go*linux-amd64.tar.gz -C /usr/local
-	#mkdir $HOME/go
-	#echo 'export GOROOT=/usr/local/go'>> ~/.bashrc
-	#echo 'export GOPATH=$HOME/go'>> ~/.bashrc
-	#echo 'export PATH=$PATH:$GOROOT/bin'>> ~/.bashrc
-	#source $HOME/.bashrc
-	########END
+	
+	
 
 	git clone https://github.com/inconshreveable/ngrok.git
 	read -p "输入域名:(包含www)  " domain
@@ -452,7 +440,18 @@ function ngrok(){
 	https_port=$port
 	echo "https监听端口为 $https_port"
 
+	yum install -y epel-release
+	yum install -y mercurial git bzr subversion wget golang
 
+	#####手动编译GO环境
+	##wget https://dl.google.com/go/go1.11.5.linux-amd64.tar.gz
+	#tar zxvf go*linux-amd64.tar.gz -C /usr/local
+	#mkdir $HOME/go
+	#echo 'export GOROOT=/usr/local/go'>> ~/.bashrc
+	#echo 'export GOPATH=$HOME/go'>> ~/.bashrc
+	#echo 'export PATH=$PATH:$GOROOT/bin'>> ~/.bashrc
+	#source $HOME/.bashrc
+	########END
 
 	export NGROK_DOMAIN="$domain"
 
