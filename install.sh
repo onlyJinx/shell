@@ -302,7 +302,7 @@ function aria2(){
 	read -p "输入密码(默认密码crazy_0)： " key
 	key=${key:-crazy_0}
 
-	yum install -y gcc-c++ bison libssh2-devel expat-devel gmp-devel nettle-devel libssh2-devel zlib-devel c-ares-devel gnutls-devel libgcrypt-devel libxml2-devel sqlite-devel gettext lzma-devel xz-devel gperftools gperftools-devel gperftools-libs jemalloc-devel trousers-devel
+	yum install -y gcc-c++ make automake bison autoconf git intltool libssh2-devel expat-devel gmp-devel nettle-devel libssh2-devel zlib-devel c-ares-devel gnutls-devel libgcrypt-devel libxml2-devel sqlite-devel gettext xz-devel gperftools gperftools-devel gperftools-libs trousers-devel
 
 	git clone https://github.com/aria2/aria2.git && cd aria2
 
@@ -366,14 +366,23 @@ function aria2(){
 	sed -i "/listen/ s/80/$port/" /etc/nginx/conf.d/default.conf
 	
 	systemctl enable nginx
-	systemctl start nginx
+	#systemctl start nginx
 	systemctl enable aria2
-	systemctl start aria2
+	#systemctl start aria2
+
+
 	clear
 	echo -e port:"          ""\e[31m\e[1m$port\e[0m"
 	echo -e password:"      ""\e[31m\e[1m$key\e[0m"
 	echo -e download_dir:"      ""\e[31m\e[1m$dir\e[0m"
 	echo -e config.json:"   ""\e[31m\e[1m/aria2.conf\n\n\e[0m"
+
+	read -p "关闭SElinux并重启电脑？(y/n): " rebo
+
+	if [ "y"=="$rebo" ];then
+		sed -i '/SELINUX/ s/enforcing/disabled/' /etc/selinux/config
+		reboot
+	fi
 
 }
 
