@@ -255,7 +255,8 @@ function transmission(){
 
 	##systemctl status transmission-daemon.service
 
-	## change config
+	## change config  sed引用 https://segmentfault.com/a/1190000020613397
+	
 	sed -i '/rpc-whitelist-enabled/ s/true/false/' /root/.config/transmission-daemon/settings.json
 	sed -i '/rpc-host-whitelist-enabled/ s/true/false/' /root/.config/transmission-daemon/settings.json
 	sed -i '/rpc-authentication-required/ s/false/true/' /root/.config/transmission-daemon/settings.json
