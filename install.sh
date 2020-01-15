@@ -221,6 +221,7 @@ function transmission(){
 	clear
 	download_dir "输入下载文件保存路径(默认/usr/downloads): " "/usr/downloads"
 	check
+	config_path="/root/.config/transmission-daemon/settings.json"
 	yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-devel intltool libiconv curl-devel systemd-devel wget
 
 	wget https://build.transmissionbt.com/job/trunk-linux/lastSuccessfulBuild/artifact/transmission-master-r44fc571a67.tar.xz
@@ -257,15 +258,18 @@ function transmission(){
 
 	## change config  sed引用 https://segmentfault.com/a/1190000020613397
 	
-	sed -i '/rpc-whitelist-enabled/ s/true/false/' /root/.config/transmission-daemon/settings.json
-	sed -i '/rpc-host-whitelist-enabled/ s/true/false/' /root/.config/transmission-daemon/settings.json
-	sed -i '/rpc-authentication-required/ s/false/true/' /root/.config/transmission-daemon/settings.json
-	sed -i "/rpc-username/ s/\"\"/\"$uname\"/" /root/.config/transmission-daemon/settings.json
-	sed -i "/rpc-port/ s/9091/$port/" /root/.config/transmission-daemon/settings.json
-	sed -i ":download-dir: s:\/root\/Downloads:$dir:" /root/.config/transmission-daemon/settings.json
-	sed -i '/rpc-passwor/d' /root/.config/transmission-daemon/settings.json
+	sed -i '/rpc-whitelist-enabled/ s/true/false/' $config_path
+	sed -i '/rpc-host-whitelist-enabled/ s/true/false/' $config_path
+	sed -i '/rpc-authentication-required/ s/false/true/' $config_path
+	##单引号里特殊符号都不起作用$ or /\，使用双引号替代单引号
+	sed -i "/rpc-username/ s/\"\"/\"$uname\"/" $config_path
+	sed -i "/rpc-port/ s/9091/$port/" $config_path
+	##sed分隔符/和路径分隔符混淆，用:代替/
+	sed -i ":download-dir: s:\/root\/Downloads:$dir:" $config_path
+	sed -i "/rpc-password/ s/\"{.*/\"$passwd\",/" $config_path
+	#sed -i '/rpc-passwor/d' /root/.config/transmission-daemon/settings.json
 	#sed -i "/dht-enabled/a\    \"download-dir\": \"$dir\"," /root/.config/transmission-daemon/settings.json
-	sed -i "/rpc-host-whitelist-enabled/a \"rpc-password\": \"$passwd\"," /root/.config/transmission-daemon/settings.json
+	#sed -i "/rpc-host-whitelist-enabled/a \"rpc-password\": \"$passwd\"," /root/.config/transmission-daemon/settings.json
 
 	firewall-cmd --zone=public --add-port=51413/tcp --permanent
 	firewall-cmd --zone=public --add-port=51413/udp --permanent
