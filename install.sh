@@ -11,6 +11,13 @@ function check(){
 	fi
 }
 
+##selinux开放读写
+##setsebool -P samba_export_all_ro=1
+##setsebool -P samba_export_all_rw=1
+##selinux开放端口
+##semanage port -a -t smbd_port_t  -p tcp 4555(自定义端口)
+##自定义端口：在[global]添加 smb ports = 端口号；
+
 function check_port(){
 	read -p "请输入监听端口(默认$1):" port
 	port=${port:-$1}
