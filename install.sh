@@ -366,6 +366,7 @@ function aria2(){
 	firewall-cmd --zone=public --add-port=$port/udp --permanent
 	firewall-cmd --zone=public --add-port=6800/tcp --permanent
 	firewall-cmd --zone=public --add-port=6800/udp --permanent
+	firewall-cmd --reload 
 
 	##webui
 	cd ~
@@ -375,6 +376,10 @@ function aria2(){
 	##config file
 	##vi /etc/nginx/conf.d/default.conf
 	sed -i "/listen/ s/80/$port/" /etc/nginx/conf.d/default.conf
+	
+	##selinux 设置
+	ausearch -c 'nginx' --raw | audit2allow -M my-nginx
+	semodule -i my-nginx.pp
 	
 	systemctl enable nginx
 	#systemctl start nginx
@@ -388,12 +393,7 @@ function aria2(){
 	echo -e download_dir:"      ""\e[31m\e[1m$dir\e[0m"
 	echo -e config.json:"   ""\e[31m\e[1m/aria2.conf\n\n\e[0m"
 
-	read -p "关闭SElinux并重启电脑？(y/n): " rebo
 
-	if [ "y"=="$rebo" ];then
-		sed -i '/SELINUX/ s/enforcing/disabled/' /etc/selinux/config
-		reboot
-	fi
 
 }
 
