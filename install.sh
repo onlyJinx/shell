@@ -220,11 +220,11 @@ function transmission(){
 	clear
 	check_port 9091
 	clear
-	read -p "请输入密码，直接回车则设置为默认密码 transmission2020:  " passwd
-	passwd=${passwd:-transmission2020}
-	clear
 	read -p "请输入用户名，直接回车则设置为默认用户 transmission:  " uname
 	uname=${uname:-transmission}
+	clear
+	read -p "请输入密码，直接回车则设置为默认密码 transmission2020:  " passwd
+	passwd=${passwd:-transmission2020}
 	clear
 	download_dir "输入下载文件保存路径(默认/usr/downloads): " "/usr/downloads"
 	check
@@ -299,7 +299,7 @@ function transmission(){
 
 	echo -e port:"          ""\e[31m\e[1m$port\e[0m"
 	echo -e password:"      ""\e[31m\e[1m$passwd\e[0m"
-	echo -e password:"      ""\e[31m\e[1m$uname\e[0m"
+	echo -e username:"      ""\e[31m\e[1m$uname\e[0m"
 	echo -e download_dir:"      ""\e[31m\e[1m$dir\e[0m"
 	echo -e config.json:"   ""\e[31m\e[1m/root/.config/transmission-daemon/settings.json\n\n\e[0m"
 }
