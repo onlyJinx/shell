@@ -133,18 +133,18 @@ function shadowsocks-libev(){
 	#wget https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.1.0/v2ray-plugin-linux-amd64-v1.1.0.tar.gz
 	#tar zxvf v2ray-plugin* && mv v2ray-plugin-linux-amd64 /etc/shadowsocks-libev/v2ray-plugin &&rm -f v2ray-plugin*
 
-
+	###报错 undefined reference to `ares_set_servers_ports_csv'，指定libsodium configure路径
 	###Installation of shadowsocks-libev
 	git clone https://github.com/shadowsocks/shadowsocks-libev.git
 	cd shadowsocks-libev
 	git submodule update --init --recursive
-	./autogen.sh && ./configure && make
+	./autogen.sh && ./configure --with-sodium-include=/usr/include --with-sodium-lib=/usr/lib
 	##检查编译返回的状态码
 	check "ShadowSocks-libev"
-	sudo make install
+	make && make install
 
 	###尝试运行程序
-    check_fin "ss-server"
+	check_fin "ss-server"
 	mkdir /etc/shadowsocks-libev
 	###cp /root/shadowsocks-libev/debian/config.json /etc/shadowsocks-libev/config.json
 
