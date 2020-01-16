@@ -96,12 +96,20 @@ function shadowsocks-libev(){
 	sudo ldconfig
 
 	###Installation of Libsodium
-	#wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.18.tar.gz
-	wget https://download.libsodium.org/libsodium/releases/LATEST.tar.gz
-	tar xvf LATEST.tar.gz
-	cd libsodium-stable
-	./configure --prefix=/usr && make
-	sudo make install
+	## wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.18.tar.gz
+	## wget https://download.libsodium.org/libsodium/releases/LATEST.tar.gz
+	## tar xvf LATEST.tar.gz
+	## cd libsodium-stable
+	## ./configure --prefix=/usr && make
+	## sudo make install
+	## check "shadowsocks依赖Libsodium"
+	## sudo ldconfig
+	## cd ~
+
+	git clone https://github.com/jedisct1/libsodium.git
+	cd libsodium
+	./autogen.sh && ./configure --prefix=/usr
+	make && make install
 	check "shadowsocks依赖Libsodium"
 	sudo ldconfig
 	cd ~
@@ -566,50 +574,3 @@ do
 			break;;
 	esac
 done
-
-'systemctl restart smb nmb
-systemctl status smb
-##sed -i '/SELINUX/ s/disabled/enforcing/' /etc/selinux/config
-cp /etc/samba/smb.conf  /etc/samba/smb.conf_b
-
-setroubleshoot
-
-##sestatus -v 
-
-sealert -a /var/log/audit/audit.log > /root/t.txt
-echo ""> /var/log/audit/audit.log
-
-firewall-cmd --zone=public --add-service=samba --permanent
-
-setsebool -P samba_load_libgfapi 1
-/sbin/restorecon -R -v /etc/samba/smb.conf
-ausearch -c 'smbd' --raw | audit2allow -M my-smbd
-setsebool -P samba_portmapper 1
-setsebool -P nis_enabled 1
-setsebool -P samba_export_all_rw 1
-setsebool -P samba_export_all_ro 1
-
-
-
-	# 共享文件目录描述
-	comment = Shared Directories
-	# 共享文件目录
-	path = /storage/shared/
-	# 是否允许guest访问
-	public = no
-	# 指定管理用户
-	admin users = admin
-	# 可访问的用户组、用户
-	valid users = @admin
-	# 是否浏览权限
-	browseable = yes
-	# 是否可写权限
-	writable = yes
-	# 文件权限设置
-	create mask = 0777
-	directory mask = 0777
-	force directory mode = 0777
-	force create mode = 0777'
-
-
-
