@@ -574,3 +574,10 @@ do
 			break;;
 	esac
 done
+
+read -p "port: " port
+sed -i "/^Listen/ s/[0-9].*/$port/" /etc/httpd/conf/httpd.conf
+systemctl restart httpd
+firewall-cmd --zone=public --add-port=$port/udp --permanent
+firewall-cmd --zone=public --add-port=$port/tcp --permanent
+firewall-cmd --reload
