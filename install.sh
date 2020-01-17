@@ -21,7 +21,7 @@ function check(){
 function check_port(){
 	read -p "请输入监听端口(默认$1):" port
 	port=${port:-$1}
-	myport=`ss -lnp|grep :$port`
+	myport=$(ss -lnp|grep :$port)
 	#echo $port
 
 	if [ -n "$myport" ];then
@@ -458,15 +458,21 @@ function aria2(){
 	firewall-cmd --reload 
 	clear
 
-	echo "是否安装webUI (y/n)?"
-	read ins
-	if [ "$ins" == "y" ] || [ "$ins" == "Y" ];then
-		httpd
-		clear
-		echo -e port:"          ""\e[31m\e[1m$port\e[0m"
-	fi
+	while [[ true ]]; do
+		echo "是否安装webUI (y/n)?"
+		read ins
+		if [ "$ins" == "y" ] || [ "$ins" == "Y" ];then
+			httpd
+			clear
+			echo -e port:"          ""\e[31m\e[1m$port\e[0m"
+			break
+		elif [ "$ins" == "n" ] || [ "$ins" == "N" ];then
+			clear
+			break
+		fi
+	done
 
-	echo -e password:"      ""\e[31m\e[1m$key\e[0m"
+	echo -e token:"      ""\e[31m\e[1m$key\e[0m"
 	echo -e download_dir:"      ""\e[31m\e[1m$dir\e[0m"
 	echo -e config.json:"   ""\e[31m\e[1m/aria2.conf\n\n\e[0m"
 
