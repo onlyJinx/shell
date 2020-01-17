@@ -34,7 +34,7 @@ function check_version(){
 	if [ -x "$(command -v $1)" ]; then
 		echo "$2已安装，是否继续覆盖安装？(Y/N)"
 		read -t 30 -p "" sel
-		if [ "y" == "$sel" ]; then
+		if [ "$sel" == "y" ] || [ "$sel" == "Y" ];then
 			echo "继续执行安装"
 		else
 			echo "已取消安装"
@@ -207,7 +207,7 @@ function shadowsocks-libev(){
 
 	systemctl start ssl&&systemctl enable ssl
 	### remove the file
-	cd /root && rm -fr mbedtls* shadowsocks-libev libsodium* LATEST.tar.gz c-ares
+	cd /root && rm -fr mbedtls* shadowsocks-libev libsodium LATEST.tar.gz c-ares
 
 	clear
 	###ss -lnp|grep 443
@@ -312,10 +312,84 @@ function transmission(){
 	echo -e config.json:"   ""\e[31m\e[1m/root/.config/transmission-daemon/settings.json\n\n\e[0m"
 }
 
+function samba(){
+
+	yum install samba -y
+	cp /etc/samba/smb.conf  /etc/samba/smb.conf_b
+	clear
+	read -p "输入共享路径(默认/usr/downloads)" upath
+	upath=${upath:-/usr/downloads}
+
+	if [ ! -d $upath ]; then
+	 	##echo "文件夹不存在，已创建文件夹 $upath"
+	 	mkdir $upath
+	fi
+	clear
+	echo "设置smb管理员(root)密码"
+	smbpasswd -a root
+
+	##sed -i '/SELINUX/ s/disabled/enforcing/' /etc/selinux/config
+	##setroubleshoot
+	##sestatus -v 
+	##sealert -a /var/log/audit/audit.log > /root/t.txt
+	##echo ""> /var/log/audit/audit.log
+
+	firewall-cmd --zone=public --add-service=samba --permanent
+	firewall-cmd --reload 
+
+	clear
+
+	echo "loading..."
+	setsebool -P samba_load_libgfapi 1
+	/sbin/restorecon -R -v /etc/samba/smb.conf
+	ausearch -c 'smbd' --raw | audit2allow -M my-smbd
+	setsebool -P samba_portmapper 1
+	setsebool -P nis_enabled 1
+	setsebool -P samba_export_all_rw 1
+	setsebool -P samba_export_all_ro 1
+
+	cat >/etc/samba/smb.conf<<-EOF
+	[global]
+	     	workgroup = SAMBA
+	        security = user
+	        passdb backend = tdbsam
+	        #smb ports = 445
+	        printing = cups
+	        printcap name = cups
+	        load printers = yes
+	        cups options = raw
+	[share]
+	        # 共享文件目录描述
+	        comment = Shared Directories
+	        # 共享文件目录
+	        path = $upath
+	        # 是否允许guest访问
+	        public = no
+	        # 指定管理用户
+	        #admin users = admin
+	        # 可访问的用户组、用户
+	        #valid users = @admin
+	        # 是否浏览权限
+	        browseable = yes
+	        # 是否可写权限
+	        writable = yes
+	        # 文件权限设置
+	        create mask = 0777
+	        directory mask = 0777
+	        force directory mode = 0777
+	        force create mode = 0777
+	EOF
+
+	systemctl restart smb nmb
+	systemctl enable smb
+	clear
+	systemctl status smb
+
+}
+
 function aria2(){
 
 	check_version aria2c aria2
-	check_port 80
 	clear
 	download_dir "输入下载文件保存路径(默认/usr/downloads): " "/usr/downloads"
 	clear
@@ -368,41 +442,89 @@ function aria2(){
 	EOF
 
 	##安装nginx
+	#SElinux原因不再用nginx，用httpd替代
+	#rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+	#yum install nginx -y
+	##selinux 设置
+	#ausearch -c 'nginx' --raw | audit2allow -M my-nginx
+	#semodule -i my-nginx.pp
 
-	rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
-	yum install nginx -y
-	firewall-cmd --zone=public --add-port=$port/tcp --permanent
-	firewall-cmd --zone=public --add-port=$port/udp --permanent
+
+	systemctl enable aria2
+	systemctl start aria2
+
 	firewall-cmd --zone=public --add-port=6800/tcp --permanent
 	firewall-cmd --zone=public --add-port=6800/udp --permanent
 	firewall-cmd --reload 
-
-	##webui
-	cd ~
-	git clone https://github.com/ziahamza/webui-aria2.git
-	rm -fr /usr/share/nginx/html/*
-	cp /root/webui-aria2/docs/* /usr/share/nginx/html/
-	##config file
-	##vi /etc/nginx/conf.d/default.conf
-	sed -i "/listen/ s/80/$port/" /etc/nginx/conf.d/default.conf
-	
-	##selinux 设置
-	ausearch -c 'nginx' --raw | audit2allow -M my-nginx
-	semodule -i my-nginx.pp
-	
-	systemctl enable nginx
-	#systemctl start nginx
-	systemctl enable aria2
-	#systemctl start aria2
-
-
 	clear
-	echo -e port:"          ""\e[31m\e[1m$port\e[0m"
+
+	echo "是否安装webUI (y/n)?"
+	read ins
+	if [ "$ins" == "y" ] || [ "$ins" == "Y" ];then
+		httpd
+		clear
+		echo -e port:"          ""\e[31m\e[1m$port\e[0m"
+	fi
+
 	echo -e password:"      ""\e[31m\e[1m$key\e[0m"
 	echo -e download_dir:"      ""\e[31m\e[1m$dir\e[0m"
 	echo -e config.json:"   ""\e[31m\e[1m/aria2.conf\n\n\e[0m"
 
+}
 
+function httpd(){
+
+	##if判断参考https://www.cnblogs.com/include/archive/2011/12/09/2307905.html
+	count=0
+	while(1>0)
+	do
+	read -p "输入一个大于1024的端口(第$count次)  " port
+	let count++
+	port=${port:-80}
+	if [ "$port" -gt "1024" ];then
+		if [ -n "$(ss -lnp|grep :$port)" ];then
+			clear
+			echo "端口$port已被占用，请输入其他端口"
+		else
+			break
+		fi
+
+	elif [ "$port" -eq "80" ] || [ "$port" -eq "443" ];then
+		if [ -n "$(ss -lnp|grep :$port)" ];then
+			clear
+			echo "端口$port已被占用，请输入其他端口"
+		else
+			break
+		fi
+	fi
+
+	if [ $count -gt 10 ]; then
+		clear
+		echo "滚"
+		break
+	fi
+	done
+
+	yum install httpd -y
+	sed -i "/^Listen/ s/[0-9].*/$port/" /etc/httpd/conf/httpd.conf
+	firewall-cmd --zone=public --add-port=$port/tcp --permanent
+	firewall-cmd --zone=public --add-port=$port/udp --permanent
+	firewall-cmd --reload
+	clear
+
+	##webui
+	cd ~
+	git clone https://github.com/ziahamza/webui-aria2.git
+	#rm -fr /usr/share/nginx/html/*
+	mv /var/www/html /var/www/html_b
+	mkdir /var/www/html/
+	cp -r /root/webui-aria2/docs/* /var/www/html/
+	##config file
+	##vi /etc/nginx/conf.d/default.conf
+	#sed -i "/listen/ s/80/$port/" /etc/nginx/conf.d/default.conf
+
+	systemctl enable httpd
+	systemctl start httpd
 
 }
 
@@ -551,7 +673,7 @@ function ngrok(){
 	##scp root@www.iruohui.top:/tmp/ngrok.exe c:\temp
 }
 
-select option in "shadowsocks-libev" "transmission" "aria2" "Up_kernel" "ngrok"
+select option in "shadowsocks-libev" "transmission" "aria2" "Up_kernel" "samba" "ngrok"
 do
 	case $option in
 		"shadowsocks-libev")
@@ -559,6 +681,9 @@ do
 			break;;
 		"transmission")
 			transmission
+			break;;
+		"samba")
+			samba
 			break;;
 		"aria2")
 			aria2
@@ -574,10 +699,3 @@ do
 			break;;
 	esac
 done
-
-read -p "port: " port
-sed -i "/^Listen/ s/[0-9].*/$port/" /etc/httpd/conf/httpd.conf
-systemctl restart httpd
-firewall-cmd --zone=public --add-port=$port/udp --permanent
-firewall-cmd --zone=public --add-port=$port/tcp --permanent
-firewall-cmd --reload
