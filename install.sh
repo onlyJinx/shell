@@ -1,5 +1,5 @@
 #!/bin/bash
-
+##ss -lnp|grep :9091|awk -F "pid=" '{print $2}'|sed s/,.*//xargs kill -9
 function check(){
 	###状态码赋值给s
 	#return_code=$?
