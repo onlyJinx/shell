@@ -634,7 +634,7 @@ function ngrok(){
 	cd ~/ngrok
 	GOOS=linux GOARCH=amd64 make release-server&&GOOS=windows GOARCH=amd64 make release-client
 
-	if ![ -x "/root/ngrok/bin/ngrokd" ]; then
+	if ! [ -x "/root/ngrok/bin/ngrokd" ]; then
 		echo "编译失败，请手动检查！！！"
 		exit 1
 	fi
