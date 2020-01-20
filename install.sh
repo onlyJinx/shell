@@ -19,32 +19,34 @@ function check(){
 ##自定义端口：在[global]添加 smb ports = 端口号；
 
 function check_port(){
-	read -p "请输入监听端口(默认$1):" port
-	port=${port:-$1}
-	myport=$(ss -lnp|grep :$port)
-	#echo $port
 
-	if [ -n "$myport" ];then
-	        echo "端口$port已被占用,输入 yes 关闭占用进程,或直接回车更换其他端口，否则退出程序"
-	        read sel
-	        if [ "$sel" == "yes" ] || [ "$sel" == "YES"]; then
-	        	##关闭进程
-	        	ss -lnp|grep :$port|awk -F "pid=" '{print $2}'|sed 's/,.*//'|xargs kill -9
-	        	if ! [ -n "$(ss -lnp|grep :$port)" ]; then
-	        		echo "已终止占用端口进程"
-	        	else
-	        		echo "进程关闭失败,请手动关闭"
-	        		exit 1
-	        	fi
-	        elif [ -z "$sel" ]; then
-	        	check_port $1
-	        else
-	        	clear
-	        	echo "已取消操作"
-	        	exit 0
+	while [[ true ]]; do
 
-	        fi
-	fi
+		read -p "请输入监听端口(默认$1):" port
+		port=${port:-$1}
+		myport=$(ss -lnp|grep :$port)
+		if [ -n "$myport" ];then
+			echo "端口$port已被占用,输入 y 关闭占用进程,输入 n 退出程序直接回车更换其他端口"
+			read sel
+			if [ "$sel" == "y" ] || [ "$sel" == "Y" ]; then
+				##关闭进程
+				ss -lnp|grep :$port|awk -F "pid=" '{print $2}'|sed 's/,.*//'|xargs kill -9
+				if ! [ -n "$(ss -lnp|grep :$port)" ]; then
+					echo "已终止占用端口进程"
+					break
+				else
+					echo "进程关闭失败,请手动关闭"
+					exit 1
+				fi
+			elif [ "$sel" == "n" ] || [ "$sel" == "N" ]; then
+				echo "已取消操作"
+				exit 0
+			else
+				clear
+			fi
+		fi
+	done
+
 }
 
 function check_version(){
@@ -294,7 +296,8 @@ function transmission(){
 	sed -i '/rpc-host-whitelist-enabled/ s/true/false/' $config_path
 	sed -i '/rpc-authentication-required/ s/false/true/' $config_path
 	##单引号里特殊符号都不起作用$ or /\，使用双引号替代单引号
-	sed -i "/rpc-username/ s/\"\"/\"$uname\"/" $config_path
+	##sed -i "/rpc-username/ s/\"\"/\"$uname\"/" $config_path
+	sed -i "/rpc-username/ s/: \".*/: \"$uname\",/" $config_path
 	sed -i "/rpc-port/ s/9091/$port/" $config_path
 	##sed分隔符/和路径分隔符混淆，用:代替/
 	sed -i ":download-dir: s:\/root\/Downloads:$dir:" $config_path
