@@ -1,5 +1,5 @@
 #!/bin/bash
-##ss -lnp|grep :9091|awk -F "pid=" '{print $2}'|sed s/,.*//xargs kill -9
+##ss -lnp|grep :$port|awk -F "pid=" '{print $2}'|sed s/,.*//xargs kill -9
 function check(){
 	###状态码赋值给s
 	#return_code=$?
@@ -25,8 +25,25 @@ function check_port(){
 	#echo $port
 
 	if [ -n "$myport" ];then
-	        echo "端口$port已被占用，请输入其他端口"
-	        check_port $1
+	        echo "端口$port已被占用,输入 yes 关闭占用进程,或直接回车更换其他端口，否则退出程序"
+	        read sel
+	        if [ "$sel" == "yes" ] || [ "$sel" == "YES"]; then
+	        	##关闭进程
+	        	ss -lnp|grep :$port|awk -F "pid=" '{print $2}'|sed 's/,.*//'|xargs kill -9
+	        	if ! [ -n "$(ss -lnp|grep :$port)" ]; then
+	        		echo "已终止占用端口进程"
+	        	else
+	        		echo "进程关闭失败,请手动关闭"
+	        		exit 1
+	        	fi
+	        elif [ -z "$sel" ]; then
+	        	check_port $1
+	        else
+	        	clear
+	        	echo "已取消操作"
+	        	exit 0
+
+	        fi
 	fi
 }
 
