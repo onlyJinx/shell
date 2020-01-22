@@ -218,7 +218,7 @@ function shadowsocks-libev(){
 
 	###firewall oprt
 
-	firewall-cmd --zone=public --add-port=$port/udp --permanent
+	firewall-cmd --zone=public --add-port=$port/tcp --permanent
 	firewall-cmd --zone=public --add-port=$port/udp --permanent
 
 	firewall-cmd --reload 
