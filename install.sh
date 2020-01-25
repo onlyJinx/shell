@@ -421,7 +421,9 @@ function aria2(){
 	git clone https://github.com/aria2/aria2.git && cd aria2
 
 	##静态编译
-	autoreconf -i && ./configure ARIA2_STATIC=yes
+	##autoreconf -i && ./configure ARIA2_STATIC=yes
+	
+	autoreconf -i && ./configure
 	make && make install
 
 	###相关编译报错引用https://weair.xyz/build-aria2/
