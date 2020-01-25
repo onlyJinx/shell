@@ -416,7 +416,7 @@ function aria2(){
 	read -p "输入密码(默认密码crazy_0)： " key
 	key=${key:-crazy_0}
 
-	yum install -y gcc-c++ make automake bison autoconf git intltool libssh2-devel expat-devel gmp-devel nettle-devel libssh2-devel zlib-devel c-ares-devel gnutls-devel libgcrypt-devel libxml2-devel sqlite-devel gettext xz-devel gperftools gperftools-devel gperftools-libs trousers-devel
+	yum install -y gcc-c++ make libtool automake bison autoconf git intltool libssh2-devel expat-devel gmp-devel nettle-devel libssh2-devel zlib-devel c-ares-devel gnutls-devel libgcrypt-devel libxml2-devel sqlite-devel gettext xz-devel gperftools gperftools-devel gperftools-libs trousers-devel
 
 	git clone https://github.com/aria2/aria2.git && cd aria2
 
