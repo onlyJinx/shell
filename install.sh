@@ -315,7 +315,6 @@ function transmission(){
 	sed -i '/rpc-whitelist-enabled/ s/true/false/' $config_path
 	sed -i '/rpc-host-whitelist-enabled/ s/true/false/' $config_path
 	sed -i '/rpc-authentication-required/ s/false/true/' $config_path
-	"": 1024
 	##取消未完成文件自动添加 .part后缀
 	sed -i '/rename-partial-files/ s/true/false/' $config_path
 	##单引号里特殊符号都不起作用$ or /\，使用双引号替代单引号
@@ -329,9 +328,9 @@ function transmission(){
 	sed -i "/speed-limit-up-enabled/ s/false/true/" $config_path
 	##限速1M/s
 	sed -i "/\"speed-limit-up\"/ s/:.*/: 1024,/" $config_path
-	#sed -i '/rpc-passwor/d' /root/.config/transmission-daemon/settings.json
-	#sed -i "/dht-enabled/a\    \"download-dir\": \"$dir\"," /root/.config/transmission-daemon/settings.json
-	#sed -i "/rpc-host-whitelist-enabled/a \"rpc-password\": \"$passwd\"," /root/.config/transmission-daemon/settings.json
+	##limit rate
+	sed -i "/ratio-limit-enabled/ s/false/true/" $config_path
+	sed -i "/\"ratio-limit\"/ s/:.*/: 2,/" $config_path
 
 	firewall-cmd --zone=public --add-port=51413/tcp --permanent
 	firewall-cmd --zone=public --add-port=51413/udp --permanent
@@ -443,7 +442,7 @@ function aria2(){
 	read -p "输入密码(默认密码crazy_0)： " key
 	key=${key:-crazy_0}
 
-	yum install -y gcc-c++ make libtool wget automake bison autoconf git intltool libssh2-devel expat-devel gmp-devel nettle-devel libssh2-devel zlib-devel c-ares-devel gnutls-devel libgcrypt-devel libxml2-devel sqlite-devel gettext xz-devel gperftools gperftools-devel gperftools-libs trousers-devel
+	yum install -y gcc-c++ make libtool automake bison autoconf git intltool libssh2-devel expat-devel gmp-devel nettle-devel libssh2-devel zlib-devel c-ares-devel gnutls-devel libgcrypt-devel libxml2-devel sqlite-devel gettext xz-devel gperftools gperftools-devel gperftools-libs trousers-devel
 
 	git clone https://github.com/aria2/aria2.git && cd aria2
 
