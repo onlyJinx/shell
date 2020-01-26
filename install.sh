@@ -315,6 +315,7 @@ function transmission(){
 	sed -i '/rpc-whitelist-enabled/ s/true/false/' $config_path
 	sed -i '/rpc-host-whitelist-enabled/ s/true/false/' $config_path
 	sed -i '/rpc-authentication-required/ s/false/true/' $config_path
+	"": 1024
 	##取消未完成文件自动添加 .part后缀
 	sed -i '/rename-partial-files/ s/true/false/' $config_path
 	##单引号里特殊符号都不起作用$ or /\，使用双引号替代单引号
@@ -324,6 +325,10 @@ function transmission(){
 	##sed分隔符/和路径分隔符混淆，用:代替/
 	sed -i ":download-dir: s:\/root\/Downloads:$dir:" $config_path
 	sed -i "/rpc-password/ s/\"{.*/\"$passwd\",/" $config_path
+	##开启限速
+	sed -i "speed-limit-up-enabled/ s/false/true/" $config_path
+	##限速1M/s
+	sed -i "/\"speed-limit-up\"/ s/:.*/: 1024,/" $config_path
 	#sed -i '/rpc-passwor/d' /root/.config/transmission-daemon/settings.json
 	#sed -i "/dht-enabled/a\    \"download-dir\": \"$dir\"," /root/.config/transmission-daemon/settings.json
 	#sed -i "/rpc-host-whitelist-enabled/a \"rpc-password\": \"$passwd\"," /root/.config/transmission-daemon/settings.json
