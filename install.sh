@@ -82,11 +82,29 @@ function download_dir(){
 	 fi
 }
 
-test
-###check aria2
+function check_directory_exist(){
+	##a_dir=$1
+	if [[ -d $1 ]]; then
+		echo 文件夹 $1 存在，是否删除\(y/n\)?
+		read sel
+		if [ "$sel" == "y" ] || [ "$sel" == "Y" ]; then
+			rm -fr /root/aria2
+			if [[ "$?"=="0" ]]; then
+				echo 文件夹 $1 已删除
+			else
+				echo 文件夹 $1 删除失败，请手动删除！
+				exit 0
+			fi
+		else
+			mv $1 $1_$(date +%T)
+			echo 已将目录 $1 移动至 $1_$(date +%T)
+		fi
+	fi
+}
 
 function shadowsocks-libev(){
 
+	check_directory_exist /root/shadowsocks-libev
 	check_version ss-server shadowsocks
 	read -t 60 -p "请输入密码，直接回车则设置为默认密码: nPB4bF5K8+apre." passwd
 	passwd=${passwd:-nPB4bF5K8+apre.}
@@ -242,7 +260,7 @@ function shadowsocks-libev(){
 
 function transmission(){
 
-
+	check_directory_exist transmission-3.00+
 	check_version transmission-daemon transmission
 	clear
 	check_port 9091
@@ -409,6 +427,7 @@ function samba(){
 
 function aria2(){
 
+	check_directory_exist aria2
 	check_version aria2c aria2
 	clear
 	download_dir "输入下载文件保存路径(默认/usr/downloads): " "/usr/downloads"
@@ -604,7 +623,7 @@ function Up_kernel(){
 function ngrok(){
 	
 	
-
+	check_directory_exist /root/ngrok
 	git clone https://github.com/inconshreveable/ngrok.git
 	read -p "输入域名:(包含www)  " domain
 
