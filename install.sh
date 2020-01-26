@@ -326,7 +326,7 @@ function transmission(){
 	sed -i ":download-dir: s:\/root\/Downloads:$dir:" $config_path
 	sed -i "/rpc-password/ s/\"{.*/\"$passwd\",/" $config_path
 	##开启限速
-	sed -i "speed-limit-up-enabled/ s/false/true/" $config_path
+	sed -i "/speed-limit-up-enabled/ s/false/true/" $config_path
 	##限速1M/s
 	sed -i "/\"speed-limit-up\"/ s/:.*/: 1024,/" $config_path
 	#sed -i '/rpc-passwor/d' /root/.config/transmission-daemon/settings.json
