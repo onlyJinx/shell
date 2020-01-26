@@ -44,6 +44,8 @@ function check_port(){
 			else
 				clear
 			fi
+		else
+			break
 		fi
 	done
 
