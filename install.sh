@@ -315,6 +315,8 @@ function transmission(){
 	sed -i '/rpc-whitelist-enabled/ s/true/false/' $config_path
 	sed -i '/rpc-host-whitelist-enabled/ s/true/false/' $config_path
 	sed -i '/rpc-authentication-required/ s/false/true/' $config_path
+	##取消未完成文件自动添加 .part后缀
+	sed -i '/rename-partial-files/ s/true/false/' $config_path
 	##单引号里特殊符号都不起作用$ or /\，使用双引号替代单引号
 	##sed -i "/rpc-username/ s/\"\"/\"$uname\"/" $config_path
 	sed -i "/rpc-username/ s/: \".*/: \"$uname\",/" $config_path
