@@ -629,9 +629,7 @@ function Up_kernel(){
 
 function ngrok(){
 	
-	
-	check_directory_exist /root/ngrok
-	git clone https://github.com/inconshreveable/ngrok.git
+
 	read -p "输入域名:(包含www)  " domain
 
 	clear
@@ -645,6 +643,9 @@ function ngrok(){
 	check_port 443
 	https_port=$port
 	echo "https监听端口为 $https_port"
+		
+	check_directory_exist /root/ngrok
+	git clone https://github.com/inconshreveable/ngrok.git
 
 	yum install -y epel-release
 	yum install -y mercurial git bzr subversion wget golang
