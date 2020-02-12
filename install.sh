@@ -765,6 +765,10 @@ function filemanager(){
 
 	yum install -y wget
 	wget https://github.com/filebrowser/filebrowser/releases/download/v2.1.0/linux-amd64-filebrowser.tar.gz
+	if [ ! -f "/root/linux-amd64-filebrowser.tar.gz" ]; then
+		echo "下载失败，请检查网络是否正常！"
+		exit 1
+	fi
 	mkdir /etc/filemanager
 	tar zxf linux-amd64-filebrowser.tar.gz -C /etc/filemanager
 	install_filemanager()
