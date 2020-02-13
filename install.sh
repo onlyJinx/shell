@@ -904,6 +904,8 @@ function filemanager(){
 	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db users add $uname $pword --perm.admin
 
 	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db config set --root $dir
+	
+	#filebrowser -d /opt/etc/filebrowser/filebrowser.db users update admin -p 123456
 
 	firewall-cmd --zone=public --add-port=$port/tcp --permanent
 	firewall-cmd --zone=public --add-port=$port/udp --permanent
