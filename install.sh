@@ -956,7 +956,7 @@ function trojan(){
 	###检测证书文件
 	clear
 	echo "########端口检测本地证书########"
-	if [ -d "/tmp/trojan" ];then
+	if [ ! -d "/tmp/trojan" ];then
 		mkdir /tmp/trojan
 	fi
 	count=$(ls -l /tmp/trojan | grep "^-" | wc -l ) 
