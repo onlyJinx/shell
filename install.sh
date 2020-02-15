@@ -941,7 +941,283 @@ function filemanager(){
 }
 
 
-select option in "shadowsocks-libev" "transmission" "aria2" "Up_kernel" "samba" "ngrok" "filemanager"
+function trojan(){
+	clear
+	echo "######强烈建议使用443及80端口######"
+	echo "#不会自动申请证书，请先准备好ssl证书#"
+	echo "######并放到 /tmp/trojan 目录######"
+	echo "########按任意键开始端口检测########"
+	read
+	clear
+	echo "直接回车检测https(443)监听端口"
+	check_port 443
+	echo "直接回车检测http(80)监听端口"
+	check_port 80
+	###检测证书文件
+	clear
+	echo "########端口检测本地证书########"
+	if [ -d "/tmp/trojan" ];then
+		mkdir /tmp/trojan
+	fi
+	count=$(ls -l /tmp/trojan | grep "^-" | wc -l ) 
+	if [ $count -gt 2 ];then
+	        echo "这个/tmp/trojan目录怎么有$count个文件？证书加Key才两个文件而已,自己清空该目录所有文件再放入key和证书!!!"
+	        exit 0
+	elif  ! [ -f /tmp/trojan/*key ]; then
+		#cp /tmp/trojan/*key /etc/trojan/private.key
+		echo "请将密钥key放入 /tmp/trojan 文件夹后再执行该脚本"
+		exit 0
+	elif [ -f /tmp/trojan/*pem ]; then
+		#cp /tmp/trojan/*pem /etc/trojan/certificate.pem
+		cert=pem
+		echo "已检测到pem证书文件"
+	elif [ -f /tmp/trojan/*crt ]; then
+		#cp /tmp/trojan/*crt /etc/trojan/certificate.crt
+		cert=crt
+		echo "已检测到crt证书文件"
+	else
+		echo "请将证书文件(crt/pem)放入/tmp/trojan 文件夹后再执行该脚本"
+		exit 0
+	fi
+
+	read -p "设置一个trojan密码(默认trojanWdai1)： " PW
+	PW=${PW:-trojanWdai1}
+
+	yum -y install gcc pcre pcre-devel zlib zlib-devel openssl openssl-devel wget
+	wget http://nginx.org/download/nginx-1.17.8.tar.gz && tar zxf nginx-1.17.8.tar.gz && cd nginx-1.17.8
+
+	./configure --user=root --group=root --prefix=/usr/local/nginx --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-threads
+	check
+	make && make install
+	check
+	ln -s /usr/local/nginx/sbin/nginx /usr/bin/nginx
+
+	mv /usr/local/nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.conf_backup
+
+	##nginx配置文件修改
+
+	cat >/usr/local/nginx/conf/nginx.conf<<-EOF
+
+		worker_processes  1;
+
+		events {
+		    worker_connections  1024;
+		}
+
+
+		http {
+		    include       mime.types;
+		    default_type  application/octet-stream;
+
+		    sendfile        on;
+
+		    keepalive_timeout  65;
+
+		    #gzip  on;
+
+		    ##主域名转发
+		    ##127.0.0.1:80为接受trojan 443端口转发
+			    server {
+			      listen    127.0.0.1:80 default_server;
+			      server_name  www.iruohui.top;
+			      location / {
+			      		proxy_pass https://www.novipnoad.com;
+			      }
+		    }
+
+		    ###全站https
+		    server {
+		        listen 0.0.0.0:80;
+		        listen [::]:80;
+		        server_name _;
+		        return 301 https://\$host\$request_uri;
+		    }
+
+		    ##强制加www
+		    server {
+		    	listen         80;
+		    	server_name    ruod.top;
+		    	rewrite ^(.*) \$scheme://www.\$server_name\$1 permanent;
+		    }
+		    ##子域名站内转发
+		    ##server {
+		    ##  listen    127.0.0.1:80;
+		    ##  server_name  file.iruohui.top;
+		    ##  location / {     
+		    ##  		proxy_pass http://127.0.0.1:4020;
+		    ##  }
+		    ##}
+		}
+	EOF
+
+	###crate service
+	#单双引号不转义，反单引号 $ 要转
+	cat >/etc/init.d/nginx<<-EOF
+	#!/bin/sh
+	#
+	# nginx - this script starts and stops the nginx daemon
+	#
+	# chkconfig:   - 85 15
+	# description:  NGINX is an HTTP(S) server, HTTP(S) reverse \\
+	#               proxy and IMAP/POP3 proxy server
+	# processname: nginx
+	# config:      /usr/local/nginx/conf/nginx.conf
+	# config:      /etc/sysconfig/nginx
+	# pidfile:     /usr/local/nginx/logs/nginx.pid
+	# Source function library.
+	. /etc/rc.d/init.d/functions
+	# Source networking configuration.
+	. /etc/sysconfig/network
+	# Check that networking is up.
+	[ "\$NETWORKING" = "no" ] && exit 0
+	nginx="/usr/local/nginx/sbin/nginx"
+	prog=\$(basename \$nginx)
+	NGINX_CONF_FILE="/usr/local/nginx/conf/nginx.conf"
+	[ -f /etc/sysconfig/nginx ] && . /etc/sysconfig/nginx
+	lockfile=/var/lock/subsys/nginx
+	make_dirs() {
+	   # make required directories
+	   user=\`\$nginx -V 2>&1 | grep "configure arguments:" | sed 's/[^*]*--user=\\([^ ]*\\).*/\\1/g' -\`
+	   if [ -z "\`grep \$user /etc/passwd\`" ]; then
+	       useradd -M -s /bin/nologin \$user
+	   fi
+	   options=\`\$nginx -V 2>&1 | grep 'configure arguments:'\`
+	   for opt in \$options; do
+	       if [ \`echo \$opt | grep '.*-temp-path'\` ]; then
+	           value=\`echo \$opt | cut -d "=" -f 2\`
+	           if [ ! -d "\$value" ]; then
+	               # echo "creating" \$value
+	               mkdir -p \$value && chown -R \$user \$value
+	           fi
+	       fi
+	   done
+	}
+	start() {
+	    [ -x \$nginx ] || exit 5
+	    [ -f \$NGINX_CONF_FILE ] || exit 6
+	    make_dirs
+	    echo -n \$"Starting \$prog: "
+	    daemon \$nginx -c \$NGINX_CONF_FILE
+	    retval=\$?
+	    echo
+	    [ \$retval -eq 0 ] && touch \$lockfile
+	    return \$retval
+	}
+	stop() {
+	    echo -n \$"Stopping \$prog: "
+	    killproc \$prog -QUIT
+	    retval=\$?
+	    echo
+	    [ \$retval -eq 0 ] && rm -f \$lockfile
+	    return \$retval
+	}
+	restart() {
+	    configtest || return \$?
+	    stop
+	    sleep 1
+	    start
+	}
+	reload() {
+	    configtest || return \$?
+	    echo -n \$"Reloading \$prog: "
+	    killproc \$nginx -HUP
+	    RETVAL=\$?
+	    echo
+	}
+	force_reload() {
+	    restart
+	}
+	configtest() {
+	  \$nginx -t -c \$NGINX_CONF_FILE
+	}
+	rh_status() {
+	    status \$prog
+	}
+	rh_status_q() {
+	    rh_status >/dev/null 2>&1
+	}
+	case "\$1" in
+	    start)
+	        rh_status_q && exit 0
+	        \$1
+	        ;;
+	    stop)
+	        rh_status_q || exit 0
+	        \$1
+	        ;;
+	    restart|configtest)
+	        \$1
+	        ;;
+	    reload)
+	        rh_status_q || exit 7
+	        \$1
+	        ;;
+	    force-reload)
+	        force_reload
+	        ;;
+	    status)
+	        rh_status
+	        ;;
+	    condrestart|try-restart)
+	        rh_status_q || exit 0
+	            ;;
+	    *)
+	        echo \$"Usage: \$0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|configtest}"
+	        exit 2
+	esac
+	EOF
+	chmod a+x /etc/init.d/nginx
+	chkconfig --add /etc/init.d/nginx
+	chkconfig nginx on
+
+	###nginx编译引用自博客
+	###https://www.cnblogs.com/stulzq/p/9291223.html
+
+	wget https://github.com/trojan-gfw/trojan/releases/download/v1.14.1/trojan-1.14.1-linux-amd64.tar.xz && tar xvJf trojan-1.14.1-linux-amd64.tar.xz -C /etc
+	ln -s /etc/trojan/trojan /usr/bin/trojan
+	config_path=/etc/trojan/config.json
+	sed -i '/password2/ d' $config_path
+	sed -i "/\"password1\",/ s/\"password1\",/\"$PW\"/" $config_path
+	sed -i ":\"cert\": s:path\/to:etc\/trojan:" $config_path
+	sed -i ":\"key\": s:path\/to:etc\/trojan:" $config_path
+
+
+	##复制证书文件
+	cp /tmp/trojan/*key /etc/trojan/private.key
+	if [[ "$cert" == "crt" ]]; then
+		cp /tmp/trojan/*crt /etc/trojan/certificate.crt
+	else
+		cp /tmp/trojan/*pem /etc/trojan/certificate.pem
+	fi
+
+	###crate service
+	cat >/etc/systemd/system/trojan.service<<-EOF
+	[Unit]
+	Description=trojan Server
+	After=network.target
+	[Service]
+	ExecStart=/etc/trojan/trojan -c /etc/trojan/config.json
+	User=root
+	[Install]
+	WantedBy=multi-user.target
+	EOF
+
+	firewall-cmd --zone=public --add-port=443/tcp --permanent
+	firewall-cmd --zone=public --add-port=443/udp --permanent
+	firewall-cmd --zone=public --add-port=80/tcp --permanent
+	firewall-cmd --zone=public --add-port=80/udp --permanent
+	firewall-cmd --reload
+
+	systemctl start trojan
+	systemctl enable trojan
+
+	systemctl start nginx
+	systemctl status nginx
+	systemctl enable nginx
+
+}
+
+select option in "shadowsocks-libev" "transmission" "aria2" "Up_kernel" "samba" "ngrok" "filemanager" "trojan+nginx"
 do
 	case $option in
 		"shadowsocks-libev")
@@ -964,6 +1240,9 @@ do
 			break;;
 		"filemanager")
 			filemanager
+			break;;
+		"trojan+nginx")
+			trojan
 			break;;
 		*)
 			echo "nothink to do"
