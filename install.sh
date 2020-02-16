@@ -1177,6 +1177,7 @@ function trojan(){
 	ln -s /etc/trojan/trojan /usr/bin/trojan
 	config_path=/etc/trojan/config.json
 	sed -i '/password2/ d' $config_path
+	sed -i "/certificate.crt/ s/.crt/.$cert/" $config_path
 	sed -i "/\"password1\",/ s/\"password1\",/\"$PW\"/" $config_path
 	sed -i ":\"cert\": s:path\/to:etc\/trojan:" $config_path
 	sed -i ":\"key\": s:path\/to:etc\/trojan:" $config_path
