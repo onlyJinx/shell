@@ -7,8 +7,31 @@ cd aria2*
 make&make install
 
 mkdir /etc/aria2
+if ! [ -d "/usr/downloads" ];then
+  mkdir /usr/downloads
+fi
 #mkdir /web_home/downloads
 #mv aria2.conf /
+
+	##aria2 config file
+
+	cat >/etc/aria2/aria2.conf<<-EOF
+	    rpc-secret=$key
+	    enable-rpc=true
+	    rpc-allow-origin-all=true
+	    rpc-listen-all=true
+	    max-concurrent-downloads=5
+	    continue=true
+	    max-connection-per-server=5
+	    min-split-size=10M
+	    split=16
+	    max-overall-download-limit=0
+	    max-download-limit=0
+	    max-overall-upload-limit=0
+	    max-upload-limit=0
+	    dir=/usr/downloads
+	    file-allocation=prealloc
+	EOF
 
 cat >/etc/systemd/system/aria2.service<< EOF
 [Unit]
