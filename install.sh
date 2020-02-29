@@ -986,7 +986,15 @@ function trojan(){
 	yum -y install gcc pcre pcre-devel zlib zlib-devel openssl openssl-devel wget
 	wget http://nginx.org/download/nginx-1.17.8.tar.gz && tar zxf nginx-1.17.8.tar.gz && cd nginx-1.17.8
 
-	./configure --user=root --group=root --prefix=/usr/local/nginx --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-threads
+	./configure \
+	--prefix=/usr/local/nginx \
+	--with-http_ssl_module \
+	--with-http_stub_status_module \
+	--with-http_realip_module \
+	--with-threads \
+	--with-stream_ssl_module \
+	--with-stream_ssl_preread_module \
+	--with-stream=dynamic
 	check
 	make && make install
 	check
@@ -997,7 +1005,7 @@ function trojan(){
 	##nginx配置文件修改
 
 	cat >/usr/local/nginx/conf/nginx.conf<<-EOF
-
+		load_module /usr/local/nginx/modules/ngx_stream_module.so;
 		worker_processes  1;
 
 		events {
