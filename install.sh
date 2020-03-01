@@ -12,7 +12,7 @@ function check(){
 }
 
 ##selinux开放读写
-##setsebool -P samba_export_all_ro=1
+##setsebool -P saa_export_all_ro=1
 ##setsebool -P samba_export_all_rw=1
 ##selinux开放端口
 ##semanage port -a -t smbd_port_t  -p tcp 4555(自定义端口)
@@ -124,7 +124,7 @@ function shadowsocks-libev(){
 
 
 	###Installation of MbedTLS
-	wget https://tls.mbed.org/download/mbedtls-2.16.3-gpl.tgz
+	wget --no-check-certificate https://tls.mbed.org/download/mbedtls-2.16.3-gpl.tgz
 	###wget https://tls.mbed.org/download/mbedtls-2.16.2-apache.tgz
 	tar xvf mbedtls*gpl.tgz
 	cd mbedtls*
