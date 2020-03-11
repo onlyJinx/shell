@@ -953,6 +953,16 @@ function trojan(){
 	check_port 443
 	echo "直接回车检测http(80)监听端口"
 	check_port 80
+	clear
+	read -p 输入域名 domain
+
+	while [[ true ]]; do
+		read -p "请输入域名:" domain
+		if [[ -n $domain ]]; then
+			break;
+		fi
+	done
+
 	###检测证书文件
 	clear
 	echo "########端口检测本地证书########"
@@ -1027,7 +1037,7 @@ function trojan(){
 		    ##127.0.0.1:80为接受trojan 443端口转发
 			    server {
 			      listen    127.0.0.1:80 default_server;
-			      server_name  www.iruohui.top;
+			      server_name  $domain;
 			      location / {
 			      		proxy_pass https://www.novipnoad.com;
 			      }
