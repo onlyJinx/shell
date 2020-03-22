@@ -1098,6 +1098,7 @@ function trojan(){
 		    server {
 		    listen       5555;
 		    server_name  $domain;
+		    charset utf-8;
 		        location / {
 
 		        }
