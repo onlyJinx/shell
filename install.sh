@@ -1,4 +1,5 @@
 #!/bin/bash
+##CDN 104.16.160.3|104.16.192.155|104.20.157.6
 ##ss -lnp|grep :$port|awk -F "pid=" '{print $2}'|sed s/,.*//xargs kill -9
 function check(){
 	###状态码赋值给s
@@ -1017,54 +1018,91 @@ function trojan(){
 	cat >/usr/local/nginx/conf/nginx.conf<<-EOF
 		load_module /usr/local/nginx/modules/ngx_stream_module.so;
 		worker_processes  1;
-
 		events {
 		    worker_connections  1024;
 		}
-
+		stream {
+		    map $ssl_preread_server_name $name {
+		        $domain 127.0.0.1:555;
+		        default 127.0.0.1:4433;
+		    }
+		    server {
+		        listen 443 reuseport;
+		        listen [::]:443 reuseport;
+		        proxy_pass $name;
+		        ssl_preread on; #开启 ssl_preread
+		    }
+		}
 
 		http {
 		    include       mime.types;
 		    default_type  application/octet-stream;
-
 		    sendfile        on;
-
 		    keepalive_timeout  65;
 
-		    #gzip  on;
-
-		    ##主域名转发
-		    ##127.0.0.1:80为接受trojan 443端口转发
-			    server {
-			      listen    127.0.0.1:80 default_server;
-			      server_name  $domain;
-			      location / {
-			      		proxy_pass https://www.novipnoad.com;
-			      }
-		    }
-
-		    ###全站https
+		    ##全站https
 		    server {
-		        listen 0.0.0.0:80;
-		        listen [::]:80;
+		        listen       80;
 		        server_name _;
-		        return 301 https://\$host\$request_uri;
+		           rewrite ^(.*) https://$host$1 permanent;
 		    }
 
-		    ##强制加www
+		    ##不在已知域名的全部返回403
 		    server {
-		    	listen         80;
-		    	server_name    ruod.top;
-		    	rewrite ^(.*) \$scheme://www.\$server_name\$1 permanent;
+		        listen       4433 default ssl;
+		        server_name  _;
+		        return 403;
+		        ssl_certificate      /usr/local/nginx/full_chain.pem;
+		        ssl_certificate_key  /usr/local/nginx/private.key;
+
+		        ssl_session_cache    shared:SSL:1m;
+		        ssl_session_timeout  5m;
+
+		        ssl_ciphers  HIGH:!aNULL:!MD5;
+		        ssl_prefer_server_ciphers  on;
+
+		        location / {
+		            root   html;
+		            index  index.html index.htm;
+		        }
 		    }
-		    ##子域名站内转发
-		    ##server {
-		    ##  listen    127.0.0.1:80;
-		    ##  server_name  file.iruohui.top;
-		    ##  location / {     
-		    ##  		proxy_pass http://127.0.0.1:4020;
-		    ##  }
-		    ##}
+
+		    ##转发给aria2 rpc端口
+		    server {
+		    listen       4433 ssl;
+		    server_name  your aria2_rpc domain;
+		        ssl_certificate      /usr/local/nginx/full_chain.pem;
+		        ssl_certificate_key  /usr/local/nginx/private.key;
+		        location / {
+		            proxy_pass                  http://127.0.0.1:6800;
+		        }
+		    }
+
+		    ##转发给transmission
+		    server {
+		    listen       4433 ssl;
+		    server_name  your transmission name;
+		        ssl_certificate      /usr/local/nginx/full_chain.pem;
+		        ssl_certificate_key  /usr/local/nginx/private.key;
+		        location / {
+		            proxy_pass                  http://127.0.0.1:9091;
+		            proxy_redirect              off;
+		            proxy_http_version          1.1;
+		            proxy_set_header Upgrade    $http_upgrade;
+		            proxy_set_header Connection "upgrade";
+		            proxy_set_header Host       $http_host;
+		        }
+		    }
+
+		    ##Trojan伪装站点,由trojan接管ssl配置,server里不用单独配置ssl
+		    server {
+		    listen       5555;
+		    server_name  $domain;
+		        location / {
+
+		        }
+		    }
+
 		}
 	EOF
 
@@ -1196,6 +1234,8 @@ function trojan(){
 	config_path=/etc/trojan/config.json
 	sed -i '/password2/ d' $config_path
 	sed -i "/certificate.crt/ s/.crt/.$cert/" $config_path
+	sed -i "/local_port/ s/443/555/" $config_path
+	sed -i "/remote_port/ s/80/5555/" $config_path
 	sed -i "/\"password1\",/ s/\"password1\",/\"$PW\"/" $config_path
 	sed -i ":\"cert\": s:path\/to:etc\/trojan:" $config_path
 	sed -i ":\"key\": s:path\/to:etc\/trojan:" $config_path
@@ -1268,6 +1308,3 @@ do
 			break;;
 	esac
 done
-
-
-
