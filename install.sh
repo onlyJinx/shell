@@ -995,7 +995,7 @@ function trojan(){
 	PW=${PW:-trojanWdai1}
 
 	yum -y install gcc pcre pcre-devel zlib zlib-devel openssl openssl-devel wget
-	wget http://nginx.org/download/nginx-1.17.8.tar.gz && tar zxf nginx-1.17.8.tar.gz && cd nginx-1.17.8
+	wget http://nginx.org/download/nginx-1.17.9.tar.gz && tar zxf nginx-1.17.9.tar.gz && cd nginx-1.17.9
 
 	./configure \
 	--prefix=/usr/local/nginx \
