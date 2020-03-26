@@ -221,7 +221,7 @@ function shadowsocks-libev(){
 
 
 	###crate service
-	cat >/etc/systemd/system/ssl.service<<-EOF
+	cat >/etc/systemd/system/.service<<-EOF
 	[Unit]
 	Description=Shadowsocks Server
 	After=network.target
@@ -1004,6 +1004,7 @@ function trojan(){
 	--with-http_realip_module \
 	--with-threads \
 	--with-stream_ssl_module \
+	--with-http_v2_module \
 	--with-stream_ssl_preread_module \
 	--with-stream=dynamic
 	check
