@@ -12,13 +12,6 @@ function check(){
 	fi
 }
 
-##selinux开放读写
-##setsebool -P saa_export_all_ro=1
-##setsebool -P samba_export_all_rw=1
-##selinux开放端口
-##semanage port -a -t smbd_port_t  -p tcp 4555(自定义端口)
-##自定义端口：在[global]添加 smb ports = 端口号；
-
 function check_port(){
 
 	while [[ true ]]; do
@@ -239,10 +232,10 @@ function shadowsocks-libev(){
 
 	###firewall oprt
 
-	firewall-cmd --zone=public --add-port=$port/tcp --permanent
-	firewall-cmd --zone=public --add-port=$port/udp --permanent
+	##firewall-cmd --zone=public --add-port=$port/tcp --permanent
+	##firewall-cmd --zone=public --add-port=$port/udp --permanent
 
-	firewall-cmd --reload 
+	##firewall-cmd --reload 
 
 
 	systemctl start ssl&&systemctl enable ssl
@@ -333,11 +326,11 @@ function transmission(){
 	sed -i "/ratio-limit-enabled/ s/false/true/" $config_path
 	sed -i "/\"ratio-limit\"/ s/:.*/: 2,/" $config_path
 
-	firewall-cmd --zone=public --add-port=51413/tcp --permanent
-	firewall-cmd --zone=public --add-port=51413/udp --permanent
-	firewall-cmd --zone=public --add-port=$port/tcp --permanent
-	firewall-cmd --zone=public --add-port=$port/udp --permanent
-	firewall-cmd --reload
+	##firewall-cmd --zone=public --add-port=51413/tcp --permanent
+	##firewall-cmd --zone=public --add-port=51413/udp --permanent
+	##firewall-cmd --zone=public --add-port=$port/tcp --permanent
+	##firewall-cmd --zone=public --add-port=$port/udp --permanent
+	##firewall-cmd --reload
 
 	##替换webUI
 	cd ~
@@ -380,8 +373,8 @@ function samba(){
 	##sealert -a /var/log/audit/audit.log > /root/t.txt
 	##echo ""> /var/log/audit/audit.log
 
-	firewall-cmd --zone=public --add-service=samba --permanent
-	firewall-cmd --reload 
+	##firewall-cmd --zone=public --add-service=samba --permanent
+	##firewall-cmd --reload 
 
 	clear
 
@@ -502,9 +495,9 @@ function aria2(){
 	systemctl enable aria2
 	systemctl start aria2
 
-	firewall-cmd --zone=public --add-port=6800/tcp --permanent
-	firewall-cmd --zone=public --add-port=6800/udp --permanent
-	firewall-cmd --reload 
+	##firewall-cmd --zone=public --add-port=6800/tcp --permanent
+	##firewall-cmd --zone=public --add-port=6800/udp --permanent
+	##firewall-cmd --reload 
 	clear
 
 	while [[ true ]]; do
@@ -562,9 +555,9 @@ function httpd(){
 
 	yum install httpd -y
 	sed -i "/^Listen/ s/[0-9].*/$port/" /etc/httpd/conf/httpd.conf
-	firewall-cmd --zone=public --add-port=$port/tcp --permanent
-	firewall-cmd --zone=public --add-port=$port/udp --permanent
-	firewall-cmd --reload
+	##firewall-cmd --zone=public --add-port=$port/tcp --permanent
+	##firewall-cmd --zone=public --add-port=$port/udp --permanent
+	##firewall-cmd --reload
 	clear
 
 	##webui
@@ -692,13 +685,13 @@ function ngrok(){
 	cp /root/ngrok/bin/ngrokd /usr/local/bin/ngrokd
 	cp /root/ngrok/bin/windows_amd64/ngrok.exe /tmp/
 
-	firewall-cmd --zone=public --add-port=$https_port/tcp --permanent
-	firewall-cmd --zone=public --add-port=$https_port/udp --permanent
-	firewall-cmd --zone=public --add-port=$http_port/tcp --permanent
-	firewall-cmd --zone=public --add-port=$http_port/udp --permanent
-	firewall-cmd --zone=public --add-port=4443/tcp --permanent
-	firewall-cmd --zone=public --add-port=4443/udp --permanent
-	firewall-cmd --reload
+	##firewall-cmd --zone=public --add-port=$https_port/tcp --permanent
+	##firewall-cmd --zone=public --add-port=$https_port/udp --permanent
+	##firewall-cmd --zone=public --add-port=$http_port/tcp --permanent
+	##firewall-cmd --zone=public --add-port=$http_port/udp --permanent
+	##firewall-cmd --zone=public --add-port=4443/tcp --permanent
+	##firewall-cmd --zone=public --add-port=4443/udp --permanent
+	##firewall-cmd --reload
 
 	###后台脚本
 
@@ -908,9 +901,9 @@ function filemanager(){
 	
 	#filebrowser -d /opt/etc/filebrowser/filebrowser.db users update admin -p 123456
 
-	firewall-cmd --zone=public --add-port=$port/tcp --permanent
-	firewall-cmd --zone=public --add-port=$port/udp --permanent
-	firewall-cmd --reload
+	##firewall-cmd --zone=public --add-port=$port/tcp --permanent
+	##firewall-cmd --zone=public --add-port=$port/udp --permanent
+	##firewall-cmd --reload
 	#启动命令
 	##/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db
 
@@ -955,7 +948,6 @@ function trojan(){
 	echo "直接回车检测http(80)监听端口"
 	check_port 80
 	clear
-	read -p 输入域名 domain
 
 	while [[ true ]]; do
 		read -p "请输入域名:" domain
@@ -993,9 +985,12 @@ function trojan(){
 
 	read -p "设置一个trojan密码(默认trojanWdai1)： " PW
 	PW=${PW:-trojanWdai1}
-
-	yum -y install gcc pcre pcre-devel zlib zlib-devel openssl openssl-devel wget
-	wget http://nginx.org/download/nginx-1.17.9.tar.gz && tar zxf nginx-1.17.9.tar.gz && cd nginx-1.17.9
+	read -p "请输入trojan版本号(默认1.15.1),可以到这里查https://github.com/trojan-gfw/trojan/releases： " trojan_version
+	trojan_version=${trojan_version:-1.15.1}
+	nginx_version=1.17.9
+	nginx_url=http://nginx.org/download/nginx-${nginx_version}.tar.gz
+	yum -y install gcc gcc-c++ pcre pcre-devel zlib zlib-devel openssl openssl-devel wget
+	wget $nginx_url && tar zxf nginx-${nginx_version}.tar.gz && cd nginx-$nginx_version
 
 	./configure \
 	--prefix=/usr/local/nginx \
@@ -1015,7 +1010,7 @@ function trojan(){
 	mv /usr/local/nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.conf_backup
 
 	##nginx配置文件修改
-
+	##wget -P /usr/local/nginx/conf https://raw.githubusercontent.com/onlyJinx/shell_CentOS7/master/nginx.conf
 	cat >/usr/local/nginx/conf/nginx.conf<<-EOF
 		load_module /usr/local/nginx/modules/ngx_stream_module.so;
 		worker_processes  1;
@@ -1023,15 +1018,16 @@ function trojan(){
 		    worker_connections  1024;
 		}
 		stream {
-		    map $ssl_preread_server_name $name {
-		        $domain 127.0.0.1:555;
-		        default 127.0.0.1:4433;
+		    map \$ssl_preread_server_name \$name {
+		        $domain 127.0.0.1:555;    #forward to trojan
+		        #aria2.domain.com 127.0.0.1:6801;    #forward to aria2_rpc
+		        default 127.0.0.1:4433;             #block all
 		    }
 		    server {
 		        listen 443 reuseport;
 		        listen [::]:443 reuseport;
-		        proxy_pass $name;
-		        ssl_preread on; #开启 ssl_preread
+		        proxy_pass \$name;
+		        ssl_preread on;                     #开启 ssl_preread
 		    }
 		}
 
@@ -1041,20 +1037,20 @@ function trojan(){
 		    sendfile        on;
 		    keepalive_timeout  65;
 
-		    ##全站https
+		    ###全站https
 		    server {
-		        listen       80;
+		        listen 0.0.0.0:80;
+		        listen [::]:80;
 		        server_name _;
-		           rewrite ^(.*) https://$host$1 permanent;
+		        return 301 https://\$host\$request_uri;
 		    }
 
-		    ##不在已知域名的全部返回403
 		    server {
 		        listen       4433 default ssl;
 		        server_name  _;
-		        return 403;
-		        ssl_certificate      /usr/local/nginx/full_chain.pem;
-		        ssl_certificate_key  /usr/local/nginx/private.key;
+		        return 403;  #block all
+		        ssl_certificate      /etc/trojan/certificate.pem;
+		        ssl_certificate_key  /etc/trojan/private.key;
 
 		        ssl_session_cache    shared:SSL:1m;
 		        ssl_session_timeout  5m;
@@ -1068,176 +1064,51 @@ function trojan(){
 		        }
 		    }
 
-		    ##转发给aria2 rpc端口
+
 		    server {
-		    listen       4433 ssl;
-		    server_name  your aria2_rpc domain;
-		        ssl_certificate      /usr/local/nginx/full_chain.pem;
-		        ssl_certificate_key  /usr/local/nginx/private.key;
+		    listen       127.0.0.1:6801 ssl;
+		    server_name  _;
+		        ssl_certificate      /etc/trojan/certificate.pem;
+		        ssl_certificate_key  /etc/trojan/private.key;
 		        location / {
 		            proxy_pass                  http://127.0.0.1:6800;
 		        }
 		    }
 
-		    ##转发给transmission
+		    ##Trojan伪装站点
 		    server {
-		    listen       4433 ssl;
-		    server_name  your transmission name;
-		        ssl_certificate      /usr/local/nginx/full_chain.pem;
-		        ssl_certificate_key  /usr/local/nginx/private.key;
+		        listen       127.0.0.1:5555 http2; 
+		        server_name  _;
+		        charset utf-8;
+		        absolute_redirect off;
+		        #ssl_certificate      /etc/trojan/certificate.pem;
+		        #ssl_certificate_key  /etc/trojan/private.key;
 		        location / {
-		            proxy_pass                  http://127.0.0.1:9091;
-		            proxy_redirect              off;
-		            proxy_http_version          1.1;
-		            proxy_set_header Upgrade    $http_upgrade;
-		            proxy_set_header Connection "upgrade";
-		            proxy_set_header Host       $http_host;
-		        }
-		    }
-
-		    ##Trojan伪装站点,由trojan接管ssl配置,server里不用单独配置ssl
-		    server {
-		    listen       5555;
-		    server_name  $domain;
-		    charset utf-8;
-		        location / {
-
+		            #index index.html;
 		        }
 		    }
 
 		}
 	EOF
-
 	###crate service
 	#单双引号不转义，反单引号 $ 要转
-	cat >/etc/init.d/nginx<<-EOF
-	#!/bin/sh
-	#
-	# nginx - this script starts and stops the nginx daemon
-	#
-	# chkconfig:   - 85 15
-	# description:  NGINX is an HTTP(S) server, HTTP(S) reverse \\
-	#               proxy and IMAP/POP3 proxy server
-	# processname: nginx
-	# config:      /usr/local/nginx/conf/nginx.conf
-	# config:      /etc/sysconfig/nginx
-	# pidfile:     /usr/local/nginx/logs/nginx.pid
-	# Source function library.
-	. /etc/rc.d/init.d/functions
-	# Source networking configuration.
-	. /etc/sysconfig/network
-	# Check that networking is up.
-	[ "\$NETWORKING" = "no" ] && exit 0
-	nginx="/usr/local/nginx/sbin/nginx"
-	prog=\$(basename \$nginx)
-	NGINX_CONF_FILE="/usr/local/nginx/conf/nginx.conf"
-	[ -f /etc/sysconfig/nginx ] && . /etc/sysconfig/nginx
-	lockfile=/var/lock/subsys/nginx
-	make_dirs() {
-	   # make required directories
-	   user=\`\$nginx -V 2>&1 | grep "configure arguments:" | sed 's/[^*]*--user=\\([^ ]*\\).*/\\1/g' -\`
-	   if [ -z "\`grep \$user /etc/passwd\`" ]; then
-	       useradd -M -s /bin/nologin \$user
-	   fi
-	   options=\`\$nginx -V 2>&1 | grep 'configure arguments:'\`
-	   for opt in \$options; do
-	       if [ \`echo \$opt | grep '.*-temp-path'\` ]; then
-	           value=\`echo \$opt | cut -d "=" -f 2\`
-	           if [ ! -d "\$value" ]; then
-	               # echo "creating" \$value
-	               mkdir -p \$value && chown -R \$user \$value
-	           fi
-	       fi
-	   done
-	}
-	start() {
-	    [ -x \$nginx ] || exit 5
-	    [ -f \$NGINX_CONF_FILE ] || exit 6
-	    make_dirs
-	    echo -n \$"Starting \$prog: "
-	    daemon \$nginx -c \$NGINX_CONF_FILE
-	    retval=\$?
-	    echo
-	    [ \$retval -eq 0 ] && touch \$lockfile
-	    return \$retval
-	}
-	stop() {
-	    echo -n \$"Stopping \$prog: "
-	    killproc \$prog -QUIT
-	    retval=\$?
-	    echo
-	    [ \$retval -eq 0 ] && rm -f \$lockfile
-	    return \$retval
-	}
-	restart() {
-	    configtest || return \$?
-	    stop
-	    sleep 1
-	    start
-	}
-	reload() {
-	    configtest || return \$?
-	    echo -n \$"Reloading \$prog: "
-	    killproc \$nginx -HUP
-	    RETVAL=\$?
-	    echo
-	}
-	force_reload() {
-	    restart
-	}
-	configtest() {
-	  \$nginx -t -c \$NGINX_CONF_FILE
-	}
-	rh_status() {
-	    status \$prog
-	}
-	rh_status_q() {
-	    rh_status >/dev/null 2>&1
-	}
-	case "\$1" in
-	    start)
-	        rh_status_q && exit 0
-	        \$1
-	        ;;
-	    stop)
-	        rh_status_q || exit 0
-	        \$1
-	        ;;
-	    restart|configtest)
-	        \$1
-	        ;;
-	    reload)
-	        rh_status_q || exit 7
-	        \$1
-	        ;;
-	    force-reload)
-	        force_reload
-	        ;;
-	    status)
-	        rh_status
-	        ;;
-	    condrestart|try-restart)
-	        rh_status_q || exit 0
-	            ;;
-	    *)
-	        echo \$"Usage: \$0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|configtest}"
-	        exit 2
-	esac
-	EOF
+	wget -P /etc/init.d https://raw.githubusercontent.com/onlyJinx/shell_CentOS7/master/nginx
+
 	chmod a+x /etc/init.d/nginx
 	chkconfig --add /etc/init.d/nginx
 	chkconfig nginx on
 
 	###nginx编译引用自博客
 	###https://www.cnblogs.com/stulzq/p/9291223.html
-
-	wget https://github.com/trojan-gfw/trojan/releases/download/v1.14.1/trojan-1.14.1-linux-amd64.tar.xz && tar xvJf trojan-1.14.1-linux-amd64.tar.xz -C /etc
+	wget https://github.com/trojan-gfw/trojan/releases/download/v${trojan_version}/trojan-${trojan_version}-linux-amd64.tar.xz && tar xvJf trojan-${trojan_version}-linux-amd64.tar.xz -C /etc
 	ln -s /etc/trojan/trojan /usr/bin/trojan
 	config_path=/etc/trojan/config.json
 	sed -i '/password2/ d' $config_path
 	sed -i "/certificate.crt/ s/.crt/.$cert/" $config_path
 	sed -i "/local_port/ s/443/555/" $config_path
-	sed -i "/remote_port/ s/80/5555/" $config_path
+	sed -i "/remote_port/ s/80/5100/" $config_path
+	sed -i "/h2\":/ s/81/5555/" $config_path
+	sed -i ":http/1.1: s:http/1.1:h2:" $config_path
 	sed -i "/\"password1\",/ s/\"password1\",/\"$PW\"/" $config_path
 	sed -i ":\"cert\": s:path\/to:etc\/trojan:" $config_path
 	sed -i ":\"key\": s:path\/to:etc\/trojan:" $config_path
@@ -1263,11 +1134,11 @@ function trojan(){
 	WantedBy=multi-user.target
 	EOF
 
-	firewall-cmd --zone=public --add-port=443/tcp --permanent
-	firewall-cmd --zone=public --add-port=443/udp --permanent
-	firewall-cmd --zone=public --add-port=80/tcp --permanent
-	firewall-cmd --zone=public --add-port=80/udp --permanent
-	firewall-cmd --reload
+	##firewall-cmd --zone=public --add-port=443/tcp --permanent
+	##firewall-cmd --zone=public --add-port=443/udp --permanent
+	##firewall-cmd --zone=public --add-port=80/tcp --permanent
+	##firewall-cmd --zone=public --add-port=80/udp --permanent
+	##firewall-cmd --reload
 
 	systemctl start trojan
 	systemctl enable trojan
