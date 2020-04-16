@@ -324,7 +324,7 @@ function transmission(){
 	sed -i "/\"speed-limit-up\"/ s/:.*/: 1024,/" $config_path
 	##limit rate
 	sed -i "/ratio-limit-enabled/ s/false/true/" $config_path
-	sed -i "/\"ratio-limit\"/ s/:.*/: 2,/" $config_path
+	sed -i "/\"ratio-limit\"/ s/:.*/: 4,/" $config_path
 
 	##firewall-cmd --zone=public --add-port=51413/tcp --permanent
 	##firewall-cmd --zone=public --add-port=51413/udp --permanent
