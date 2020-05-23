@@ -139,9 +139,9 @@ function shadowsocks-libev(){
 	## sudo ldconfig
 	## cd ~
 
-	git clone https://github.com/jedisct1/libsodium.git
-	cd libsodium
-	./autogen.sh && ./configure --prefix=/usr
+	wget https://download.libsodium.org/libsodium/releases/LATEST.tar.gz
+	cd LATEST
+	./configure --prefix=/usr
 	make && make install
 	check "shadowsocks依赖Libsodium"
 	sudo ldconfig
@@ -214,7 +214,7 @@ function shadowsocks-libev(){
 
 
 	###crate service
-	cat >/etc/systemd/system/.service<<-EOF
+	cat >/etc/systemd/system/ssh.service<<-EOF
 	[Unit]
 	Description=Shadowsocks Server
 	After=network.target
