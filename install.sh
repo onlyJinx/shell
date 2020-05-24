@@ -214,7 +214,7 @@ function shadowsocks-libev(){
 
 
 	###crate service
-	cat >/etc/systemd/system/ssh.service<<-EOF
+	cat >/etc/systemd/system/ssl.service<<-EOF
 	[Unit]
 	Description=Shadowsocks Server
 	After=network.target
