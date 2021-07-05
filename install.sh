@@ -596,6 +596,8 @@ function Up_kernel(){
 	###重新创建内核配置
 	grub2-mkconfig -o /boot/grub2/grub.cfg
 
+	# Oracel内核
+	# grub2-set-default 0
 	# TCP-BBR
 	#net.core.default_qdisc=fq
 	#net.ipv4.tcp_congestion_control=bbr
