@@ -989,7 +989,7 @@ function trojan(){
 	PW=${PW:-trojanWdai1}
 	read -p "请输入trojan版本号(默认1.15.1),可以到这里查https://github.com/trojan-gfw/trojan/releases： " trojan_version
 	trojan_version=${trojan_version:-1.15.1}
-	nginx_version=1.17.9
+	nginx_version=1.21.1
 	nginx_url=http://nginx.org/download/nginx-${nginx_version}.tar.gz
 	yum -y install gcc gcc-c++ pcre pcre-devel zlib zlib-devel openssl openssl-devel wget
 	wget $nginx_url && tar zxf nginx-${nginx_version}.tar.gz && cd nginx-$nginx_version
