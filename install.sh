@@ -273,7 +273,7 @@ function transmission(){
 	yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-devel intltool libiconv curl-devel systemd-devel wget
 
 	wget https://build.transmissionbt.com/job/trunk-linux/lastSuccessfulBuild/artifact/transmission-3.00+-r53d49f3a81.tar.xz
-	tar xf transmi*xz && cd transmission-3.00+
+	tar xf transmission-3.00*xz && cd transmission-3.00*
 
 	./configure && make && make install
 	###检查返回状态码
