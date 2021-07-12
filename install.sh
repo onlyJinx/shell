@@ -272,8 +272,8 @@ function transmission(){
 	config_path="/root/.config/transmission-daemon/settings.json"
 	yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-devel intltool libiconv curl-devel systemd-devel wget
 
-	wget https://build.transmissionbt.com/job/trunk-linux/lastSuccessfulBuild/artifact/transmission-master-r44fc571a67.tar.xz
-	tar xf transmission-master-r44fc571a67.tar.xz && cd transmission-3.00+
+	wget https://build.transmissionbt.com/job/trunk-linux/lastSuccessfulBuild/artifact/transmission-3.00+-r53d49f3a81.tar.xz
+	tar xf transmi*xz && cd transmission-3.00+
 
 	./configure && make && make install
 	###检查返回状态码
