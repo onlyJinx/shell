@@ -272,10 +272,10 @@ function transmission(){
 	config_path="/root/.config/transmission-daemon/settings.json"
 	yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-devel intltool libiconv curl-devel systemd-devel wget
 
-	wget https://build.transmissionbt.com/job/trunk-linux/lastSuccessfulBuild/artifact/transmission-3.00+-r53d49f3a81.tar.xz
+	wget https://github.com/transmission/transmission-releases/raw/master/transmission-3.00.tar.xz
 	tar xf transmission-3.00*xz && cd transmission-3.00*
 
-	./configure && make && make install
+	./autogen.sh && make && make install
 	###检查返回状态码
 	check transmission
 	###尝试运行程序
@@ -554,7 +554,8 @@ function httpd(){
 	done
 
 	yum install httpd -y
-	sed -i "/^Listen/ s/[0-9].*/$port/" /etc/httpd/conf/httpd.conf
+	sed -i "/^Listen/ s/[0-9].*/$po
+	rt/" /etc/httpd/conf/httpd.conf
 	##firewall-cmd --zone=public --add-port=$port/tcp --permanent
 	##firewall-cmd --zone=public --add-port=$port/udp --permanent
 	##firewall-cmd --reload
