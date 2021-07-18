@@ -334,10 +334,10 @@ function transmission(){
 
 	##替换webUI
 	cd ~
-	wget https://github.com/ronggang/transmission-web-control/archive/v1.6.0-beta2.tar.gz
-	tar zxvf v1.6.0-beta2.tar.gz
+	wget https://github.com/ronggang/transmission-web-control/archive/refs/tags/v1.6.1.tar.gz
+	tar zxvf v1.6.1.tar.gz
 	mv /usr/local/share/transmission/web/index.html /usr/local/share/transmission/web/index.original.html
-	cp -r /root/transmission-web-control-1.6.0-beta2/src/* /usr/local/share/transmission/web/
+	cp -r /root/transmission-web-control-1.6.1/src/* /usr/local/share/transmission/web/
 
 	systemctl start transmission-daemon.service
 	systemctl enable transmission-daemon.service
