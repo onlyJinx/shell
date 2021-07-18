@@ -351,80 +351,80 @@ function transmission(){
 	echo -e config.json:"   ""\e[31m\e[1m/root/.config/transmission-daemon/settings.json\n\n\e[0m"
 }
 
-function samba(){
+# function samba(){
 
-	yum install samba -y
-	cp /etc/samba/smb.conf  /etc/samba/smb.conf_b
-	clear
-	read -p "输入共享路径(默认/usr/downloads)" upath
-	upath=${upath:-/usr/downloads}
+# 	yum install samba -y
+# 	cp /etc/samba/smb.conf  /etc/samba/smb.conf_b
+# 	clear
+# 	read -p "输入共享路径(默认/usr/downloads)" upath
+# 	upath=${upath:-/usr/downloads}
 
-	if [ ! -d $upath ]; then
-	 	##echo "文件夹不存在，已创建文件夹 $upath"
-	 	mkdir $upath
-	fi
-	clear
-	echo "设置smb管理员(root)密码"
-	smbpasswd -a root
+# 	if [ ! -d $upath ]; then
+# 	 	##echo "文件夹不存在，已创建文件夹 $upath"
+# 	 	mkdir $upath
+# 	fi
+# 	clear
+# 	echo "设置smb管理员(root)密码"
+# 	smbpasswd -a root
 
-	##sed -i '/SELINUX/ s/disabled/enforcing/' /etc/selinux/config
-	##setroubleshoot
-	##sestatus -v 
-	##sealert -a /var/log/audit/audit.log > /root/t.txt
-	##echo ""> /var/log/audit/audit.log
+# 	##sed -i '/SELINUX/ s/disabled/enforcing/' /etc/selinux/config
+# 	##setroubleshoot
+# 	##sestatus -v 
+# 	##sealert -a /var/log/audit/audit.log > /root/t.txt
+# 	##echo ""> /var/log/audit/audit.log
 
-	##firewall-cmd --zone=public --add-service=samba --permanent
-	##firewall-cmd --reload 
+# 	##firewall-cmd --zone=public --add-service=samba --permanent
+# 	##firewall-cmd --reload 
 
-	clear
+# 	clear
 
-	echo "loading..."
-	setsebool -P samba_load_libgfapi 1
-	/sbin/restorecon -R -v /etc/samba/smb.conf
-	ausearch -c 'smbd' --raw | audit2allow -M my-smbd
-	setsebool -P samba_portmapper 1
-	setsebool -P nis_enabled 1
-	setsebool -P samba_export_all_rw 1
-	setsebool -P samba_export_all_ro 1
+# 	echo "loading..."
+# 	setsebool -P samba_load_libgfapi 1
+# 	/sbin/restorecon -R -v /etc/samba/smb.conf
+# 	ausearch -c 'smbd' --raw | audit2allow -M my-smbd
+# 	setsebool -P samba_portmapper 1
+# 	setsebool -P nis_enabled 1
+# 	setsebool -P samba_export_all_rw 1
+# 	setsebool -P samba_export_all_ro 1
 
-	cat >/etc/samba/smb.conf<<-EOF
-	[global]
-	     	workgroup = SAMBA
-	        security = user
-	        passdb backend = tdbsam
-	        #smb ports = 445
-	        printing = cups
-	        printcap name = cups
-	        load printers = yes
-	        cups options = raw
-	[share]
-	        # 共享文件目录描述
-	        comment = Shared Directories
-	        # 共享文件目录
-	        path = $upath
-	        # 是否允许guest访问
-	        public = no
-	        # 指定管理用户
-	        #admin users = admin
-	        # 可访问的用户组、用户
-	        #valid users = @admin
-	        # 是否浏览权限
-	        browseable = yes
-	        # 是否可写权限
-	        writable = yes
-	        # 文件权限设置
-	        create mask = 0777
-	        directory mask = 0777
-	        force directory mode = 0777
-	        force create mode = 0777
-	EOF
+# 	cat >/etc/samba/smb.conf<<-EOF
+# 	[global]
+# 	     	workgroup = SAMBA
+# 	        security = user
+# 	        passdb backend = tdbsam
+# 	        #smb ports = 445
+# 	        printing = cups
+# 	        printcap name = cups
+# 	        load printers = yes
+# 	        cups options = raw
+# 	[share]
+# 	        # 共享文件目录描述
+# 	        comment = Shared Directories
+# 	        # 共享文件目录
+# 	        path = $upath
+# 	        # 是否允许guest访问
+# 	        public = no
+# 	        # 指定管理用户
+# 	        #admin users = admin
+# 	        # 可访问的用户组、用户
+# 	        #valid users = @admin
+# 	        # 是否浏览权限
+# 	        browseable = yes
+# 	        # 是否可写权限
+# 	        writable = yes
+# 	        # 文件权限设置
+# 	        create mask = 0777
+# 	        directory mask = 0777
+# 	        force directory mode = 0777
+# 	        force create mode = 0777
+# 	EOF
 
-	systemctl restart smb nmb
-	systemctl enable smb
-	clear
-	systemctl status smb
+# 	systemctl restart smb nmb
+# 	systemctl enable smb
+# 	clear
+# 	systemctl status smb
 
-}
+# }
 
 function aria2(){
 
@@ -624,106 +624,106 @@ function Up_kernel(){
 	###引用：https://legolasng.github.io/2017/05/08/upgrade-centos-kernel/#3安装新版本内核
 }
 
-function ngrok(){
+# function ngrok(){
 	
 
-	read -p "输入域名:(包含www)  " domain
+# 	read -p "输入域名:(包含www)  " domain
 
-	clear
-	echo "http监听端口"
-	check_port 80
-	http_port=$port
-	echo "http监听端口为 $http_port"
+# 	clear
+# 	echo "http监听端口"
+# 	check_port 80
+# 	http_port=$port
+# 	echo "http监听端口为 $http_port"
 
-	clear
-	echo "https监听端口"
-	check_port 443
-	https_port=$port
-	echo "https监听端口为 $https_port"
+# 	clear
+# 	echo "https监听端口"
+# 	check_port 443
+# 	https_port=$port
+# 	echo "https监听端口为 $https_port"
 		
-	check_directory_exist /root/ngrok
-	git clone https://github.com/inconshreveable/ngrok.git
+# 	check_directory_exist /root/ngrok
+# 	git clone https://github.com/inconshreveable/ngrok.git
 
-	yum install -y epel-release
-	yum install -y mercurial git bzr subversion wget golang
+# 	yum install -y epel-release
+# 	yum install -y mercurial git bzr subversion wget golang
 
-	#####手动编译GO环境
-	##wget https://dl.google.com/go/go1.11.5.linux-amd64.tar.gz
-	#tar zxvf go*linux-amd64.tar.gz -C /usr/local
-	#mkdir $HOME/go
-	#echo 'export GOROOT=/usr/local/go'>> ~/.bashrc
-	#echo 'export GOPATH=$HOME/go'>> ~/.bashrc
-	#echo 'export PATH=$PATH:$GOROOT/bin'>> ~/.bashrc
-	#source $HOME/.bashrc
-	########END
+# 	#####手动编译GO环境
+# 	##wget https://dl.google.com/go/go1.11.5.linux-amd64.tar.gz
+# 	#tar zxvf go*linux-amd64.tar.gz -C /usr/local
+# 	#mkdir $HOME/go
+# 	#echo 'export GOROOT=/usr/local/go'>> ~/.bashrc
+# 	#echo 'export GOPATH=$HOME/go'>> ~/.bashrc
+# 	#echo 'export PATH=$PATH:$GOROOT/bin'>> ~/.bashrc
+# 	#source $HOME/.bashrc
+# 	########END
 
-	export NGROK_DOMAIN="$domain"
+# 	export NGROK_DOMAIN="$domain"
 
-	openssl genrsa -out rootCA.key 2048
-	openssl req -x509 -new -nodes -key rootCA.key -subj "/CN=$NGROK_DOMAIN" -days 5000 -out rootCA.pem
-	openssl genrsa -out device.key 2048
-	openssl req -new -key device.key -subj "/CN=$NGROK_DOMAIN" -out device.csr
-	openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 5000
+# 	openssl genrsa -out rootCA.key 2048
+# 	openssl req -x509 -new -nodes -key rootCA.key -subj "/CN=$NGROK_DOMAIN" -days 5000 -out rootCA.pem
+# 	openssl genrsa -out device.key 2048
+# 	openssl req -new -key device.key -subj "/CN=$NGROK_DOMAIN" -out device.csr
+# 	openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 5000
 
-	##激活cp强制覆盖
-	echo "unalias cp">>  ~/.bash_profile
-	. ~/.bash_profile
-	cp -f /root/rootCA.pem /root/ngrok/assets/client/tls/ngrokroot.crt
-	cp -f /root/device.crt /root/ngrok/assets/server/tls/snakeoil.crt
-	cp -f /root/device.key /root/ngrok/assets/server/tls/snakeoil.key
+# 	##激活cp强制覆盖
+# 	echo "unalias cp">>  ~/.bash_profile
+# 	. ~/.bash_profile
+# 	cp -f /root/rootCA.pem /root/ngrok/assets/client/tls/ngrokroot.crt
+# 	cp -f /root/device.crt /root/ngrok/assets/server/tls/snakeoil.crt
+# 	cp -f /root/device.key /root/ngrok/assets/server/tls/snakeoil.key
 
-	##GO环境变量
-	cd /usr/lib/golang/src/
-	GOOS=windows GOARCH=amd64 CGO_ENABLED=0 ./make.bash
+# 	##GO环境变量
+# 	cd /usr/lib/golang/src/
+# 	GOOS=windows GOARCH=amd64 CGO_ENABLED=0 ./make.bash
 
-	#编译服务端&客户端
-	cd ~/ngrok
-	GOOS=linux GOARCH=amd64 make release-server&&GOOS=windows GOARCH=amd64 make release-client
+# 	#编译服务端&客户端
+# 	cd ~/ngrok
+# 	GOOS=linux GOARCH=amd64 make release-server&&GOOS=windows GOARCH=amd64 make release-client
 
-	if ! [ -x "/root/ngrok/bin/ngrokd" ]; then
-		echo "编译失败，请手动检查！！！"
-		exit 1
-	fi
+# 	if ! [ -x "/root/ngrok/bin/ngrokd" ]; then
+# 		echo "编译失败，请手动检查！！！"
+# 		exit 1
+# 	fi
 
-	cp /root/ngrok/bin/ngrokd /usr/local/bin/ngrokd
-	cp /root/ngrok/bin/windows_amd64/ngrok.exe /tmp/
+# 	cp /root/ngrok/bin/ngrokd /usr/local/bin/ngrokd
+# 	cp /root/ngrok/bin/windows_amd64/ngrok.exe /tmp/
 
-	##firewall-cmd --zone=public --add-port=$https_port/tcp --permanent
-	##firewall-cmd --zone=public --add-port=$https_port/udp --permanent
-	##firewall-cmd --zone=public --add-port=$http_port/tcp --permanent
-	##firewall-cmd --zone=public --add-port=$http_port/udp --permanent
-	##firewall-cmd --zone=public --add-port=4443/tcp --permanent
-	##firewall-cmd --zone=public --add-port=4443/udp --permanent
-	##firewall-cmd --reload
+# 	##firewall-cmd --zone=public --add-port=$https_port/tcp --permanent
+# 	##firewall-cmd --zone=public --add-port=$https_port/udp --permanent
+# 	##firewall-cmd --zone=public --add-port=$http_port/tcp --permanent
+# 	##firewall-cmd --zone=public --add-port=$http_port/udp --permanent
+# 	##firewall-cmd --zone=public --add-port=4443/tcp --permanent
+# 	##firewall-cmd --zone=public --add-port=4443/udp --permanent
+# 	##firewall-cmd --reload
 
-	###后台脚本
+# 	###后台脚本
 
-	#echo "/usr/local/bin/ngrokd -domain=\"${NGROK_DOMAIN:4}\" -httpAddr=\":$http_port\"  -httpsAddr=\":$https_port\"" > /usr/local/bin/start.sh
-	############################写入service时-domain及-httpAddr里的数值不加引号，直接在command运行才加引号！！！
-	###开机服务
-	cat >/etc/systemd/system/ngrok.service<<-EOF
-	[Unit]
-	Description=Ngrok Server
-	After=network.target
-	[Service]
-	ExecStart=/usr/local/bin/ngrokd -domain=${NGROK_DOMAIN:4} -httpAddr=:$http_port  -httpsAddr=:$https_port
-	User=root
-	[Install]
-	WantedBy=multi-user.target
-	EOF
-	systemctl start ngrok
-	systemctl enable ngrok
-	systemctl status ngrok
+# 	#echo "/usr/local/bin/ngrokd -domain=\"${NGROK_DOMAIN:4}\" -httpAddr=\":$http_port\"  -httpsAddr=\":$https_port\"" > /usr/local/bin/start.sh
+# 	############################写入service时-domain及-httpAddr里的数值不加引号，直接在command运行才加引号！！！
+# 	###开机服务
+# 	cat >/etc/systemd/system/ngrok.service<<-EOF
+# 	[Unit]
+# 	Description=Ngrok Server
+# 	After=network.target
+# 	[Service]
+# 	ExecStart=/usr/local/bin/ngrokd -domain=${NGROK_DOMAIN:4} -httpAddr=:$http_port  -httpsAddr=:$https_port
+# 	User=root
+# 	[Install]
+# 	WantedBy=multi-user.target
+# 	EOF
+# 	systemctl start ngrok
+# 	systemctl enable ngrok
+# 	systemctl status ngrok
 
-	clear
-	echo "按任意键清理残留文件...(ctrl+C取消)"
-	read -t 30
-	cd ~
-	rm -fr device.crt  device.csr  device.key  ngrok  rootCA.key  rootCA.pem  rootCA.srl
+# 	clear
+# 	echo "按任意键清理残留文件...(ctrl+C取消)"
+# 	read -t 30
+# 	cd ~
+# 	rm -fr device.crt  device.csr  device.key  ngrok  rootCA.key  rootCA.pem  rootCA.srl
 
-	##./ngrokd -domain="ngrok.ruor.club" -httpAddr=":80" -httpsAddr=":890"
-	##scp root@www.iruohui.top:/tmp/ngrok.exe c:\temp
-}
+# 	##./ngrokd -domain="ngrok.ruor.club" -httpAddr=":80" -httpsAddr=":890"
+# 	##scp root@www.iruohui.top:/tmp/ngrok.exe c:\temp
+# }
 
 
 
@@ -751,191 +751,191 @@ function ngrok(){
 #
 
 
-function filemanager(){
+# function filemanager(){
 
-	check_port 8080
-	download_dir "输入默认路径，默认/usr/downloads" "/usr/downloads"
-	read -p "请输入用户名(默认root)" uname
-	uname=${uname:-root}
-	read -p "请输入密码(默认daiwei96)" pword
-	pword=${pword:-daiwei96}
+# 	check_port 8080
+# 	download_dir "输入默认路径，默认/usr/downloads" "/usr/downloads"
+# 	read -p "请输入用户名(默认root)" uname
+# 	uname=${uname:-root}
+# 	read -p "请输入密码(默认daiwei96)" pword
+# 	pword=${pword:-daiwei96}
 
-	yum install -y wget
-	wget https://github.com/filebrowser/filebrowser/releases/download/v2.1.0/linux-amd64-filebrowser.tar.gz
-	if [ ! -f "/root/linux-amd64-filebrowser.tar.gz" ]; then
-		echo "下载失败，请检查网络是否正常！"
-		exit 1
-	fi
-	mkdir /etc/filemanager
-	tar zxf linux-amd64-filebrowser.tar.gz -C /etc/filemanager
-	install_filemanager()
-	{
-		trap 'echo -e "Aborted, error $? in command: $BASH_COMMAND"; trap ERR; return 1' ERR
-		filemanager_os="unsupported"
-		filemanager_arch="unknown"
-		install_path="/usr/local/bin"
+# 	yum install -y wget
+# 	wget https://github.com/filebrowser/filebrowser/releases/download/v2.1.0/linux-amd64-filebrowser.tar.gz
+# 	if [ ! -f "/root/linux-amd64-filebrowser.tar.gz" ]; then
+# 		echo "下载失败，请检查网络是否正常！"
+# 		exit 1
+# 	fi
+# 	mkdir /etc/filemanager
+# 	tar zxf linux-amd64-filebrowser.tar.gz -C /etc/filemanager
+# 	install_filemanager()
+# 	{
+# 		trap 'echo -e "Aborted, error $? in command: $BASH_COMMAND"; trap ERR; return 1' ERR
+# 		filemanager_os="unsupported"
+# 		filemanager_arch="unknown"
+# 		install_path="/usr/local/bin"
 
-		# Termux on Android has $PREFIX set which already ends with /usr
-		if [[ -n "$ANDROID_ROOT" && -n "$PREFIX" ]]; then
-			install_path="$PREFIX/bin"
-		fi
+# 		# Termux on Android has $PREFIX set which already ends with /usr
+# 		if [[ -n "$ANDROID_ROOT" && -n "$PREFIX" ]]; then
+# 			install_path="$PREFIX/bin"
+# 		fi
 
-		# Fall back to /usr/bin if necessary
-		if [[ ! -d $install_path ]]; then
-			install_path="/usr/bin"
-		fi
+# 		# Fall back to /usr/bin if necessary
+# 		if [[ ! -d $install_path ]]; then
+# 			install_path="/usr/bin"
+# 		fi
 
-		# Not every platform has or needs sudo (https://termux.com/linux.html)
-		((EUID)) && [[ -z "$ANDROID_ROOT" ]] && sudo_cmd="sudo"
+# 		# Not every platform has or needs sudo (https://termux.com/linux.html)
+# 		((EUID)) && [[ -z "$ANDROID_ROOT" ]] && sudo_cmd="sudo"
 
-		#########################
-		# Which OS and version? #
-		#########################
+# 		#########################
+# 		# Which OS and version? #
+# 		#########################
 
-		filemanager_bin="filebrowser"
-		filemanager_dl_ext=".tar.gz"
+# 		filemanager_bin="filebrowser"
+# 		filemanager_dl_ext=".tar.gz"
 
-		# NOTE: `uname -m` is more accurate and universal than `arch`
-		# See https://en.wikipedia.org/wiki/Uname
-		unamem="$(uname -m)"
-		case $unamem in
-		*aarch64*)
-			filemanager_arch="arm64";;
-		*64*)
-			filemanager_arch="amd64";;
-		*86*)
-			filemanager_arch="386";;
-		*armv5*)
-			filemanager_arch="armv5";;
-		*armv6*)
-			filemanager_arch="armv6";;
-		*armv7*)
-			filemanager_arch="armv7";;
-		*)
-			echo "Aborted, unsupported or unknown architecture: $unamem"
-			return 2
-			;;
-		esac
+# 		# NOTE: `uname -m` is more accurate and universal than `arch`
+# 		# See https://en.wikipedia.org/wiki/Uname
+# 		unamem="$(uname -m)"
+# 		case $unamem in
+# 		*aarch64*)
+# 			filemanager_arch="arm64";;
+# 		*64*)
+# 			filemanager_arch="amd64";;
+# 		*86*)
+# 			filemanager_arch="386";;
+# 		*armv5*)
+# 			filemanager_arch="armv5";;
+# 		*armv6*)
+# 			filemanager_arch="armv6";;
+# 		*armv7*)
+# 			filemanager_arch="armv7";;
+# 		*)
+# 			echo "Aborted, unsupported or unknown architecture: $unamem"
+# 			return 2
+# 			;;
+# 		esac
 
-		unameu="$(tr '[:lower:]' '[:upper:]' <<<$(uname))"
-		if [[ $unameu == *DARWIN* ]]; then
-			filemanager_os="darwin"
-		elif [[ $unameu == *LINUX* ]]; then
-			filemanager_os="linux"
-		elif [[ $unameu == *FREEBSD* ]]; then
-			filemanager_os="freebsd"
-		elif [[ $unameu == *NETBSD* ]]; then
-			filemanager_os="netbsd"
-		elif [[ $unameu == *OPENBSD* ]]; then
-			filemanager_os="openbsd"
-		elif [[ $unameu == *WIN* || $unameu == MSYS* ]]; then
-			# Should catch cygwin
-			sudo_cmd=""
-			filemanager_os="windows"
-			filemanager_bin="filebrowser.exe"
-			filemanager_dl_ext=".zip"
-		else
-			echo "Aborted, unsupported or unknown OS: $uname"
-			return 6
-		fi
+# 		unameu="$(tr '[:lower:]' '[:upper:]' <<<$(uname))"
+# 		if [[ $unameu == *DARWIN* ]]; then
+# 			filemanager_os="darwin"
+# 		elif [[ $unameu == *LINUX* ]]; then
+# 			filemanager_os="linux"
+# 		elif [[ $unameu == *FREEBSD* ]]; then
+# 			filemanager_os="freebsd"
+# 		elif [[ $unameu == *NETBSD* ]]; then
+# 			filemanager_os="netbsd"
+# 		elif [[ $unameu == *OPENBSD* ]]; then
+# 			filemanager_os="openbsd"
+# 		elif [[ $unameu == *WIN* || $unameu == MSYS* ]]; then
+# 			# Should catch cygwin
+# 			sudo_cmd=""
+# 			filemanager_os="windows"
+# 			filemanager_bin="filebrowser.exe"
+# 			filemanager_dl_ext=".zip"
+# 		else
+# 			echo "Aborted, unsupported or unknown OS: $uname"
+# 			return 6
+# 		fi
 
-		########################
-		# Download and extract #
-		########################
+# 		########################
+# 		# Download and extract #
+# 		########################
 
-		echo "Downloading File Browser for $filemanager_os/$filemanager_arch..."
-		filemanager_file="${filemanager_os}-$filemanager_arch-filebrowser$filemanager_dl_ext"
-		filemanager_tag="$(curl -s https://api.github.com/repos/filebrowser/filebrowser/releases/latest | grep -o '"tag_name": ".*"' | sed 's/"//g' | sed 's/tag_name: //g')"
-		filemanager_url="https://github.com/filebrowser/filebrowser/releases/download/$filemanager_tag/$filemanager_file"
-		echo "$filemanager_url"
+# 		echo "Downloading File Browser for $filemanager_os/$filemanager_arch..."
+# 		filemanager_file="${filemanager_os}-$filemanager_arch-filebrowser$filemanager_dl_ext"
+# 		filemanager_tag="$(curl -s https://api.github.com/repos/filebrowser/filebrowser/releases/latest | grep -o '"tag_name": ".*"' | sed 's/"//g' | sed 's/tag_name: //g')"
+# 		filemanager_url="https://github.com/filebrowser/filebrowser/releases/download/$filemanager_tag/$filemanager_file"
+# 		echo "$filemanager_url"
 
-		# Use $PREFIX for compatibility with Termux on Android
-		rm -rf "$PREFIX/tmp/$filemanager_file"
+# 		# Use $PREFIX for compatibility with Termux on Android
+# 		rm -rf "$PREFIX/tmp/$filemanager_file"
 
-		if type -p curl >/dev/null 2>&1; then
-			curl -fsSL "$filemanager_url" -o "$PREFIX/tmp/$filemanager_file"
-		elif type -p wget >/dev/null 2>&1; then
-			wget --quiet "$filemanager_url" -O "$PREFIX/tmp/$filemanager_file"
-		else
-			echo "Aborted, could not find curl or wget"
-			return 7
-		fi
+# 		if type -p curl >/dev/null 2>&1; then
+# 			curl -fsSL "$filemanager_url" -o "$PREFIX/tmp/$filemanager_file"
+# 		elif type -p wget >/dev/null 2>&1; then
+# 			wget --quiet "$filemanager_url" -O "$PREFIX/tmp/$filemanager_file"
+# 		else
+# 			echo "Aborted, could not find curl or wget"
+# 			return 7
+# 		fi
 
-		echo "Extracting..."
-		case "$filemanager_file" in
-			*.zip)    unzip -o "$PREFIX/tmp/$filemanager_file" "$filemanager_bin" -d "$PREFIX/tmp/" ;;
-			*.tar.gz) tar -xzf "$PREFIX/tmp/$filemanager_file" -C "$PREFIX/tmp/" "$filemanager_bin" ;;
-		esac
-		chmod +x "$PREFIX/tmp/$filemanager_bin"
+# 		echo "Extracting..."
+# 		case "$filemanager_file" in
+# 			*.zip)    unzip -o "$PREFIX/tmp/$filemanager_file" "$filemanager_bin" -d "$PREFIX/tmp/" ;;
+# 			*.tar.gz) tar -xzf "$PREFIX/tmp/$filemanager_file" -C "$PREFIX/tmp/" "$filemanager_bin" ;;
+# 		esac
+# 		chmod +x "$PREFIX/tmp/$filemanager_bin"
 
-		echo "Putting filemanager in $install_path (may require password)"
-		$sudo_cmd mv "$PREFIX/tmp/$filemanager_bin" "$install_path/$filemanager_bin"
-		if setcap_cmd=$(PATH+=$PATH:/sbin type -p setcap); then
-			$sudo_cmd $setcap_cmd cap_net_bind_service=+ep "$install_path/$filemanager_bin"
-		fi
-		$sudo_cmd rm -- "$PREFIX/tmp/$filemanager_file"
+# 		echo "Putting filemanager in $install_path (may require password)"
+# 		$sudo_cmd mv "$PREFIX/tmp/$filemanager_bin" "$install_path/$filemanager_bin"
+# 		if setcap_cmd=$(PATH+=$PATH:/sbin type -p setcap); then
+# 			$sudo_cmd $setcap_cmd cap_net_bind_service=+ep "$install_path/$filemanager_bin"
+# 		fi
+# 		$sudo_cmd rm -- "$PREFIX/tmp/$filemanager_file"
 
-		if type -p $filemanager_bin >/dev/null 2>&1; then
-			echo "Successfully installed"
-			trap ERR
-			return 0
-		else
-			echo "Something went wrong, File Browser is not in your path"
-			trap ERR
-			return 1
-		fi
-	}
+# 		if type -p $filemanager_bin >/dev/null 2>&1; then
+# 			echo "Successfully installed"
+# 			trap ERR
+# 			return 0
+# 		else
+# 			echo "Something went wrong, File Browser is not in your path"
+# 			trap ERR
+# 			return 1
+# 		fi
+# 	}
 
-	#不再使用官方脚本，直接在github下载二进制文件
-	#install_filemanager
+# 	#不再使用官方脚本，直接在github下载二进制文件
+# 	#install_filemanager
 
-	#创建配置数据库
-	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db config init
-	#设置监听地址
-	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db config set --address 0.0.0.0
-	#设置监听端口
-	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db config set --port $port
-	#设置日志位置
-	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db config set --log /var/log/filebrowser.log
-	#添加一个用户
-	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db users add $uname $pword --perm.admin
+# 	#创建配置数据库
+# 	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db config init
+# 	#设置监听地址
+# 	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db config set --address 0.0.0.0
+# 	#设置监听端口
+# 	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db config set --port $port
+# 	#设置日志位置
+# 	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db config set --log /var/log/filebrowser.log
+# 	#添加一个用户
+# 	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db users add $uname $pword --perm.admin
 
-	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db config set --root $dir
+# 	/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db config set --root $dir
 	
-	#filebrowser -d /opt/etc/filebrowser/filebrowser.db users update admin -p 123456
+# 	#filebrowser -d /opt/etc/filebrowser/filebrowser.db users update admin -p 123456
 
-	##firewall-cmd --zone=public --add-port=$port/tcp --permanent
-	##firewall-cmd --zone=public --add-port=$port/udp --permanent
-	##firewall-cmd --reload
-	#启动命令
-	##/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db
+# 	##firewall-cmd --zone=public --add-port=$port/tcp --permanent
+# 	##firewall-cmd --zone=public --add-port=$port/udp --permanent
+# 	##firewall-cmd --reload
+# 	#启动命令
+# 	##/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db
 
-	cat >/etc/systemd/system/filebrowser.service<<-EOF
-	[Unit]
-	Description=filebrowser Server
-	After=network.target
-	[Service]
-	ExecStart=/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db
-	User=root
-	[Install]
-	WantedBy=multi-user.target
-	EOF
-	systemctl start filebrowser
-	systemctl enable filebrowser
-	clear
+# 	cat >/etc/systemd/system/filebrowser.service<<-EOF
+# 	[Unit]
+# 	Description=filebrowser Server
+# 	After=network.target
+# 	[Service]
+# 	ExecStart=/etc/filemanager/filebrowser -d /etc/filemanager/filebrowser.db
+# 	User=root
+# 	[Install]
+# 	WantedBy=multi-user.target
+# 	EOF
+# 	systemctl start filebrowser
+# 	systemctl enable filebrowser
+# 	clear
 
-	echo -e username:"        ""\e[31m\e[1m$uname\e[0m"
-	echo -e password:"        ""\e[31m\e[1m$pword\n\n\e[0m"
-	echo -e download_dir:"    ""\e[31m\e[1m$dir\e[0m"
-	echo -e port:"            ""\e[31m\e[1m$port\n\n\e[0m"
+# 	echo -e username:"        ""\e[31m\e[1m$uname\e[0m"
+# 	echo -e password:"        ""\e[31m\e[1m$pword\n\n\e[0m"
+# 	echo -e download_dir:"    ""\e[31m\e[1m$dir\e[0m"
+# 	echo -e port:"            ""\e[31m\e[1m$port\n\n\e[0m"
 
-	####################################################################
-	#安装方法引用https://www.twblogs.net/a/5c74c5bebd9eee339917ab30/zh-cn
-	#install_filemanager函数为官方脚本，网址https://filebrowser.xyz
-	####################################################################
+# 	####################################################################
+# 	#安装方法引用https://www.twblogs.net/a/5c74c5bebd9eee339917ab30/zh-cn
+# 	#install_filemanager函数为官方脚本，网址https://filebrowser.xyz
+# 	####################################################################
 
 
-}
+# }
 
 
 function trojan(){
@@ -1152,7 +1152,7 @@ function trojan(){
 
 }
 
-select option in "shadowsocks-libev" "transmission" "aria2" "Up_kernel" "samba" "ngrok" "filemanager" "trojan+nginx"
+select option in "shadowsocks-libev" "transmission" "aria2" "Up_kernel" "trojan+nginx"
 do
 	case $option in
 		"shadowsocks-libev")
@@ -1161,21 +1161,21 @@ do
 		"transmission")
 			transmission
 			break;;
-		"samba")
-			samba
-			break;;
+# 		"samba")
+# 			samba
+# 			break;;
 		"aria2")
 			aria2
 			break;;
 		"Up_kernel")
 			Up_kernel
 			break;;
-		"ngrok")
-			ngrok
-			break;;
-		"filemanager")
-			filemanager
-			break;;
+# 		"ngrok")
+# 			ngrok
+# 			break;;
+# 		"filemanager")
+# 			filemanager
+# 			break;;
 		"trojan+nginx")
 			trojan
 			break;;
