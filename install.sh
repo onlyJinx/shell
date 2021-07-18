@@ -279,7 +279,7 @@ function transmission(){
 	###检查返回状态码
 	check transmission
 	###尝试运行程序
-	check_fin "transmission-daemon"
+	#check_fin "transmission-daemon"
 	##默认配置文件
 	##vi /root/.config/transmission-daemon/settings.json
 
