@@ -270,10 +270,18 @@ function transmission(){
 	download_dir "输入下载文件保存路径(默认/usr/downloads): " "/usr/downloads"
 	check
 	config_path="/root/.config/transmission-daemon/settings.json"
-	yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-devel intltool libiconv curl-devel systemd-devel wget
 
+	if [[ "$(type -P apt)" ]]; then
+		apt -y --no-install-recommends install ca-certificates libcurl4-openssl-dev libssl-dev pkg-config build-essential checkinstall autoconf libtool zlib1g-dev intltool libevent-dev wget git
+	elif [[ "$(type -P yum)" ]]; then
+		yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-devel intltool libiconv curl-devel systemd-devel wget git
+	else
+		echo "error: The script does not support the package manager in this operating system."
+		exit 1
+	fi
+	
 	wget https://github.com/transmission/transmission-releases/raw/master/transmission-3.00.tar.xz
-	tar xf transmission-3.00*xz && cd transmission-3.00*
+	tar xf transmission-3.00.tar.xz && cd transmission-3.00
 
 	./autogen.sh && make && make install
 	###检查返回状态码
