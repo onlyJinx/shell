@@ -272,7 +272,8 @@ function transmission(){
 	config_path="/root/.config/transmission-daemon/settings.json"
 
 	if [[ "$(type -P apt)" ]]; then
-		apt -y --no-install-recommends install ca-certificates libcurl4-openssl-dev libssl-dev pkg-config build-essential checkinstall autoconf libtool zlib1g-dev intltool libevent-dev wget git
+		echo "Debian"
+		apt-get -y --no-install-recommends install ca-certificates libcurl4-openssl-dev libssl-dev pkg-config build-essential checkinstall autoconf libtool zlib1g-dev intltool libevent-dev wget git
 	elif [[ "$(type -P yum)" ]]; then
 		yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-devel intltool libiconv curl-devel systemd-devel wget git
 	else
