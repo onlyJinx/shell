@@ -292,16 +292,18 @@ function transmission(){
 	##vi /root/.config/transmission-daemon/settings.json
 
 	##crate service
-	cat >/etc/systemd/system/transmission-daemon.service<<-EOF
+	cat >/etc/systemd/system/multi-user.target.wants/transmission-daemon.service<<-EOF
 	[Unit]
 	Description=Transmission BitTorrent Daemon
 	After=network.target
+
 	[Service]
 	User=root
-	Type=notify
+	Type=simple
 	ExecStart=/usr/local/bin/transmission-daemon -f --log-error
-	ExecReload=/bin/kill -s HUP \$MAINPID
-	NoNewPrivileges=true
+	ExecStop=/bin/kill -s STOP $MAINPID
+	ExecReload=/bin/kill -s HUP $MAINPID
+
 	[Install]
 	WantedBy=multi-user.target
 	EOF
