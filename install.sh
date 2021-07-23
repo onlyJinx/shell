@@ -293,7 +293,7 @@ function transmission(){
 	##vi /root/.config/transmission-daemon/settings.json
 
 	##crate service
-	cat >/etc/systemd/system/multi-user.target.wants/transmission-daemon.service<<-EOF
+	cat >/etc/systemd/system/transmission-daemon.service<<-EOF
 	[Unit]
 	Description=Transmission BitTorrent Daemon
 	After=network.target
