@@ -273,7 +273,7 @@ function transmission(){
 
 	if [[ "$(type -P apt)" ]]; then
 		echo "Debian"
-		apt-get -y --no-install-recommends install ca-certificates libcurl4-openssl-dev libssl-dev pkg-config build-essential checkinstall autoconf libtool zlib1g-dev intltool libevent-dev wget git
+		apt-get -y install ca-certificates libcurl4-openssl-dev libssl-dev pkg-config build-essential checkinstall autoconf libtool zlib1g-dev intltool libevent-dev wget git
 	elif [[ "$(type -P yum)" ]]; then
 		yum -y install gcc gcc-c++ make automake libtool gettext openssl-devel libevent-devel intltool libiconv curl-devel systemd-devel wget git
 	else
